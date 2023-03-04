@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'all_course.dart';
+import 'assingment.dart';
 
 class StudentDrawer extends StatefulWidget {
   const StudentDrawer({Key? key}) : super(key: key);
@@ -49,7 +50,10 @@ class _StudentDrawerState extends State<StudentDrawer> {
             leading: const Icon(Icons.assignment_ind),
             title: const Text('All Assignments'),
             onTap: () {
-              // TODO: Handle friends tap
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (BuildContext context) {
+                return const StudentAssignment();
+              }));
             },
           ),
           ListTile(
