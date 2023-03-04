@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'AttendanceCheck.dart';
 
 class LectureCourse extends StatefulWidget {
   const LectureCourse({Key? key}) : super(key: key);
@@ -7,7 +10,8 @@ class LectureCourse extends StatefulWidget {
   State<LectureCourse> createState() => _LectureCourseState();
 }
 
-class _LectureCourseState extends State<LectureCourse> with SingleTickerProviderStateMixin {
+class _LectureCourseState extends State<LectureCourse>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   @override
@@ -38,7 +42,7 @@ class _LectureCourseState extends State<LectureCourse> with SingleTickerProvider
                   const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Text(
-                      'SCS 1220 Data Structures and Algorithms',
+                      'SCS 1222 Data Structures and Algorithms',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 28.0,
@@ -55,10 +59,7 @@ class _LectureCourseState extends State<LectureCourse> with SingleTickerProvider
                         borderRadius: BorderRadius.circular(20.0),
                       ),
                       child: SizedBox(
-                        width: MediaQuery
-                            .of(context)
-                            .size
-                            .width * 0.4,
+                        width: MediaQuery.of(context).size.width * 0.4,
                         height: 40,
                         child: const Center(
                           child: Text(
@@ -75,16 +76,27 @@ class _LectureCourseState extends State<LectureCourse> with SingleTickerProvider
                   SizedBox(
                     width: 150,
                     child: ElevatedButton(
-                        onPressed: () {}, child: const Text("Mark Attendance")),
+                        onPressed: () async {
+                          if (await setCourseCodeForAttendance('SCS1202')) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AttendanceCheck()));
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Error')));
+                          }
+                        },
+                        child: const Text("Mark Attendance")),
                   ),
                   SizedBox(
                     width: 150,
                     child: ElevatedButton(
                         onPressed: () {}, child: const Text("Assignments")),
                   ),
-
-                  const SizedBox(height: 30,),
-
+                  const SizedBox(
+                    height: 30,
+                  ),
                   const Text(
                     'Announcements',
                     textAlign: TextAlign.center,
@@ -93,7 +105,6 @@ class _LectureCourseState extends State<LectureCourse> with SingleTickerProvider
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -103,13 +114,10 @@ class _LectureCourseState extends State<LectureCourse> with SingleTickerProvider
                           elevation: 1,
                           shape: RoundedRectangleBorder(
                             side: BorderSide(
-                              color: Theme
-                                  .of(context)
-                                  .colorScheme
-                                  .background,
+                              color: Theme.of(context).colorScheme.background,
                             ),
-                            borderRadius: const BorderRadius.all(Radius
-                                .circular(12)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12)),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
@@ -140,13 +148,10 @@ class _LectureCourseState extends State<LectureCourse> with SingleTickerProvider
                           elevation: 1,
                           shape: RoundedRectangleBorder(
                             side: BorderSide(
-                              color: Theme
-                                  .of(context)
-                                  .colorScheme
-                                  .background,
+                              color: Theme.of(context).colorScheme.background,
                             ),
-                            borderRadius: const BorderRadius.all(Radius
-                                .circular(12)),
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(12)),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
@@ -177,7 +182,18 @@ class _LectureCourseState extends State<LectureCourse> with SingleTickerProvider
               ),
             ),
           ),
-        )
-    );
+        ));
+  }
+
+  Future<bool> setCourseCodeForAttendance(String courseCode) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('courseCodeForAttendance', courseCode);
+    print(prefs.getString('courseCodeForAttendance'));
+
+    if (prefs.getString('courseCodeForAttendance') == courseCode) {
+      print('Course code set for attendance');
+      return true;
+    } else
+      return false;
   }
 }
