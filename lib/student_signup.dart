@@ -1,9 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class RegisterStudent extends StatefulWidget {
+  String regNo = '';
+  String name = '';
   String email = '';
   String password = '';
 
@@ -45,13 +46,51 @@ class _RegisterStudentState extends State<RegisterStudent> {
                       ),
                     ),
                     SizedBox(height: 40),
-                    SvgPicture.asset(
-                      'assets/svgs/undraw_login_re_4vu2.svg',
-                      height: 200,
-                    ),
+                    // SvgPicture.asset(
+                    //   'assets/svgs/undraw_create_re_57a3.svg',
+                    //   height: 200,
+                    // ),
                     Padding(
                       // add padding to the text field not to bottom
                       padding: EdgeInsets.fromLTRB(40.0, 40.0, 40.0, 10.0),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Registration Number',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your registration number';
+                          } else if (!value.contains('/')) {
+                            return 'Please enter a valid registration number';
+                          }
+                        },
+                        onChanged: (value) {
+                          widget.regNo = value;
+                        },
+                      ),
+                    ),
+                    Padding(
+                      // add padding to the text field not to bottom
+                      padding: EdgeInsets.fromLTRB(40.0, 10.0, 40.0, 10.0),
+                      child: TextFormField(
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Name',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your name';
+                          }
+                        },
+                        onChanged: (value) {
+                          widget.name = value;
+                        },
+                      ),
+                    ),
+                    Padding(
+                      // add padding to the text field not to bottom
+                      padding: EdgeInsets.fromLTRB(40.0, 10.0, 40.0, 10.0),
                       child: TextFormField(
                         decoration: InputDecoration(
                           border: OutlineInputBorder(),
@@ -77,8 +116,17 @@ class _RegisterStudentState extends State<RegisterStudent> {
                           labelText: 'Password',
                         ),
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter some text';
+                          if (value == null ||
+                              value.isEmpty ||
+                              value.length < 8) {
+                            return 'Please enter a password with at least 8 characters';
+                          } else if (!value.contains(RegExp(r'[A-Z]'))) {
+                            return 'Please enter a password with at least one uppercase letter';
+                          } else if (!value.contains(RegExp(r'[0-9]'))) {
+                            return 'Please enter a password with at least one number';
+                          } else if (!value
+                              .contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+                            return 'Please enter a password with at least one special character';
                           }
                         },
                         onChanged: (value) {
@@ -98,52 +146,43 @@ class _RegisterStudentState extends State<RegisterStudent> {
                             EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                       ),
                       onPressed: () async {
-                        int userLoggedIn =
-                            await login(widget.email, widget.password);
+                        int registerStatus = await registerStudent(widget.regNo,
+                            widget.name, widget.email, widget.password);
 
-                        if (userLoggedIn == 0) {
+                        if (registerStatus == 0) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('Welcome back!'),
+                            content: Text('Registration successful!'),
                             backgroundColor: Colors.green[500],
                             // add text color
                           ));
                           // wait for 1 second
                           await Future.delayed(Duration(seconds: 1));
-                          Navigator.pushNamed(context, '/student/dashboard');
-                        } else if (userLoggedIn == 4) {
+                          Navigator.pushNamed(context, '/login');
+                        } else if (registerStatus == 1) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text('Welcome back!'),
-                            backgroundColor: Colors.green[500],
+                            content: Text('Password is too weak.'),
+                            backgroundColor: Colors.red[500],
                             // add text color
                           ));
                           // wait for 1 second
-                          await Future.delayed(Duration(seconds: 1));
-                          Navigator.pushNamed(context, '/lecturer/dashboard');
-                        } else if (userLoggedIn == 1) {
+                        } else if (registerStatus == 2) {
                           print('No user found for that email.');
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text("No user found for that email."),
+                            content: Text("Email is already registered."),
                             backgroundColor: Colors.red[500],
                           ));
-                        } else if (userLoggedIn == 2) {
+                        } else if (registerStatus == 3) {
                           print('Wrong password provided for that user.');
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text("Email or password is incorrect."),
-                            backgroundColor: Colors.red[500],
-                          ));
-                        } else {
-                          print(userLoggedIn);
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text("Something went wrong."),
                             backgroundColor: Colors.red[500],
-                            // add text color
                           ));
                         }
                       },
                     ),
                     SizedBox(height: 20),
                     TextButton(
-                      child: Text('Create an account as a student'),
+                      child: Text('Already have an account? Login'),
                       style: TextButton.styleFrom(
                         primary: Colors.amber[900],
                         textStyle: TextStyle(
@@ -155,65 +194,46 @@ class _RegisterStudentState extends State<RegisterStudent> {
                         Navigator.pushNamed(context, '/student/signup');
                       },
                     ),
-                    TextButton(
-                      child: Text('Create an account as a lecturer'),
-                      style: TextButton.styleFrom(
-                        primary: Colors.amber[900],
-                        textStyle: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/lecturer/signup');
-                      },
-                    ),
                   ],
                 ),
               ),
             )));
   }
 
-  Future<int> login(String email, String password) async {
+  Future<int> registerStudent(
+      String regNo, String name, String email, String password) async {
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
 
-      // Reference to the Firestore collection
-
-      var db = FirebaseFirestore.instance;
-      //
-      // // Get the user role
-      var userRoleData = await db
-          .collection('user-roles')
-          .where('email', isEqualTo: email)
-          .get()
-          .then((value) => value.docs[0].data()['userRole'] as String);
-
-      // log userRoleData
-      print(userRoleData);
-
-      if (userRoleData == 'student') {
+      if (userCredential != null) {
+        // add user to firestore
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(userCredential.user?.uid)
+            .set({
+          'userId': userCredential.user?.uid,
+          'profilePic': '',
+          'name': name,
+          'email': email,
+          'regNo': regNo,
+          'role': 'student',
+        });
         return 0;
-      } else if (userRoleData == 'lecturer') {
-        return 4;
       } else {
-        return 5;
+        return 3;
       }
-      // Handle the successful login
-
-      return 0;
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
         return 1;
-      } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
         return 2;
       }
+    } catch (e) {
+      print(e);
+      return 3;
     }
     return 3;
   }

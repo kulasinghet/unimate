@@ -13,7 +13,7 @@ Future<void> main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
   String token = prefs.getString('token') ?? '';
-  String userRole = prefs.getString('userRole') ?? '';
+  String userRole = prefs.getString('role') ?? '';
   String userId = prefs.getString('userId') ?? '';
 
   String initialRoute = token == '' ? '/login' : '/dashboard';
