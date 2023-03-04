@@ -1,10 +1,10 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-
 import 'package:unimate/login.dart';
 import 'package:unimate/student/dashboard.dart';
+import 'package:unimate/student_signup.dart';
 
 import 'firebase_options.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 Future<void> main() async {
   bool isLoggedIn = false;
@@ -14,8 +14,6 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-
 
   runApp(MaterialApp(
     title: 'Unimate',
@@ -27,6 +25,8 @@ Future<void> main() async {
       '/': (context) => MyApp(),
       '/dashboard': (context) => Text('Second Route'),
       '/login': (context) => Login(),
+      '/student/signup': (context) => RegisterStudent(),
+      '/lecturer/signup': (context) => Text('Lecturer Signup'),
     },
   ));
 }
@@ -43,4 +43,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
