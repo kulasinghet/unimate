@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LecturerDrawer extends StatefulWidget {
   const LecturerDrawer({Key? key}) : super(key: key);
@@ -20,6 +21,11 @@ class _LecturerDrawerState extends State<LecturerDrawer> with SingleTickerProvid
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> clearSharedPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
   }
 
   @override
@@ -52,23 +58,9 @@ class _LecturerDrawerState extends State<LecturerDrawer> with SingleTickerProvid
           ),
           ListTile(
             leading: const Icon(Icons.event),
-            title: const Text('All Events'),
-            onTap: () {
-              // TODO: Handle notifications tap
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.assignment_ind),
             title: const Text('All Assignments'),
             onTap: () {
-              // TODO: Handle friends tap
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.score),
-            title: const Text('GPA Calculator'),
-            onTap: () {
-              // TODO: Handle tasks tap
+              // TODO: Handle notifications tap
             },
           ),
           ListTile(
@@ -82,7 +74,8 @@ class _LecturerDrawerState extends State<LecturerDrawer> with SingleTickerProvid
             leading: const Icon(Icons.exit_to_app),
             title: const Text('Logout'),
             onTap: () {
-              // TODO: Handle tasks tap
+              clearSharedPrefs();
+              Navigator.pushNamed(context, '/login');
             },
           )
         ],

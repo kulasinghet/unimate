@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unimate/lecturer/dashboard.dart';
 import 'package:unimate/lecturer_signup.dart';
 import 'package:unimate/login.dart';
 import 'package:unimate/student/dashboard.dart';
@@ -40,9 +41,9 @@ Future<void> main() async {
       '/dashboard': (context) => Text('Second Route'),
       '/login': (context) => Login(),
       '/student/signup': (context) => RegisterStudent(),
-      '/student/dashboard': (context) => StudentDashboard(),
+      '/student/dashboard': (context) => const StudentDashboard(),
       '/lecturer/signup': (context) => RegisterLecturer(),
-      '/lecturer/dashboard': (context) => Text('Lecturer Dashboard'),
+      '/lecturer/dashboard': (context) => const LectureDashboard(),
     },
   ));
 }

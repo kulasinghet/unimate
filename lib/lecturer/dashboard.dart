@@ -26,6 +26,13 @@ class _LectureDashboardState extends State<LectureDashboard> with SingleTickerPr
     _controller.dispose();
     super.dispose();
   }
+  
+  void navigate(int index) {
+    // Change the state for refresh the widget
+    setState(() {
+      currentPage = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,17 +43,21 @@ class _LectureDashboardState extends State<LectureDashboard> with SingleTickerPr
           title: const Text("Dashboard"),
         ),
         bottomNavigationBar: NavigationBar(
+          animationDuration: const Duration(seconds: 1),
           destinations: const [
-            NavigationDestination(icon: Icon(Icons.cast_for_education), label: 'Courses'),
-            NavigationDestination(icon: Icon(Icons.assignment_ind), label: 'Assignments'),
+            NavigationDestination(
+                icon: Icon(Icons.local_library_outlined),
+                selectedIcon: Icon(Icons.local_library_rounded),
+                label: 'Courses'
+            ),
+            NavigationDestination(
+                icon: Icon(Icons.assignment_ind_outlined),
+                selectedIcon: Icon(Icons.assignment_ind_rounded),
+                label: 'Assignments'
+            ),
             // NavigationDestination(icon: Icon(Icons.notifications), label: 'Notification')
           ],
-          onDestinationSelected: (value) {
-            // Change the state for refresh the widget
-            setState(() {
-              currentPage = value;
-            });
-          },
+          onDestinationSelected: (value) => navigate(value),
           selectedIndex: currentPage,
         ),
         drawer: const LecturerDrawer(),
