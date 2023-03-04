@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:unimate/student/gpa_calculator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 import 'all_course.dart';
 import 'assingment.dart';
@@ -61,7 +63,10 @@ class _StudentDrawerState extends State<StudentDrawer> {
             leading: const Icon(Icons.score),
             title: const Text('GPA Calculator'),
             onTap: () {
-              // TODO: Handle tasks tap
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (BuildContext context) {
+                return const GPACalculator();
+              }));
             },
           ),
           ListTile(
