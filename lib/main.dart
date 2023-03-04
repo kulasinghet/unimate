@@ -1,15 +1,28 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:unimate/login.dart';
 
-void main() {
+import 'firebase_options.dart';
+
+Future<void> main() async {
+  bool isLoggedIn = false;
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(MaterialApp(
-    title: 'Flutter Demo',
+    title: 'Unimate',
     theme: ThemeData(
       primarySwatch: Colors.blue,
     ),
-    initialRoute: '/',
+    initialRoute: isLoggedIn ? '/dashboard' : '/login',
     routes: {
       '/': (context) => MyApp(),
       '/dashboard': (context) => Text('Second Route'),
+      '/login': (context) => Login(),
     },
   ));
 }
