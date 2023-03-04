@@ -1,23 +1,30 @@
 import 'package:flutter/material.dart';
 
-class EditCourse extends StatefulWidget {
-  const EditCourse({Key? key}) : super(key: key);
+class EditAssignment extends StatefulWidget {
+  const EditAssignment({Key? key}) : super(key: key);
 
   @override
-  State<EditCourse> createState() => _EditCourseState();
+  State<EditAssignment> createState() => _EditAssignmentState();
 }
 
-class _EditCourseState extends State<EditCourse> {
+class _EditAssignmentState extends State<EditAssignment> {
   String _courseID = '';
-  String _courseName = '';
-  String _lecturerName = '';
-  String _lecTime = '';
+  String _assignName = '';
+  String _assignDesc = '';
+  String _deadline = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Edit Course Details"),
+          title: const Text("Edit Assignment"),
+          actions: <Widget>[
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(Icons.delete),
+              tooltip: "Delete",
+            )
+          ],
         ),
         body: ListView(
           children: getFormWidget(),
@@ -29,7 +36,7 @@ class _EditCourseState extends State<EditCourse> {
 
     formWidget.add(TextFormField(
       decoration:
-          const InputDecoration(labelText: 'Course ID', hintText: 'SCS 2023'),
+      const InputDecoration(labelText: 'Course ID', hintText: 'SCS 2023'),
       validator: (value) {
         if (value!.isEmpty) {
           return 'Please enter a valid ID';
@@ -46,7 +53,7 @@ class _EditCourseState extends State<EditCourse> {
 
     formWidget.add(TextFormField(
       decoration: const InputDecoration(
-          labelText: 'Course Name', hintText: 'Data Structures and Algorithms'),
+          labelText: 'Assignment Title', hintText: 'Graphs'),
       validator: (value) {
         if (value!.isEmpty) {
           return 'Please enter a valid Name';
@@ -56,14 +63,14 @@ class _EditCourseState extends State<EditCourse> {
       },
       onSaved: (value) {
         setState(() {
-          _courseName = value.toString();
+          _assignName = value.toString();
         });
       },
     ));
 
     formWidget.add(TextFormField(
       decoration: const InputDecoration(
-          labelText: 'Lecturer', hintText: 'Asitha Perera'),
+          labelText: 'Description'),
       validator: (value) {
         if (value!.isEmpty) {
           return 'Please enter a Name';
@@ -73,14 +80,14 @@ class _EditCourseState extends State<EditCourse> {
       },
       onSaved: (value) {
         setState(() {
-          _lecturerName = value.toString();
+          _assignDesc = value.toString();
         });
       },
     ));
 
     formWidget.add(TextFormField(
       decoration:
-          const InputDecoration(labelText: 'Date', hintText: 'Monday 8.00 AM'),
+      const InputDecoration(labelText: 'Deadline', hintText: 'Monday 8.00 AM'),
       validator: (value) {
         if (value!.isEmpty) {
           return 'Please enter a Date';
@@ -90,7 +97,7 @@ class _EditCourseState extends State<EditCourse> {
       },
       onSaved: (value) {
         setState(() {
-          _lecTime = '';
+          _deadline = value.toString();
         });
       },
     ));

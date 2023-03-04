@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unimate/student/assingment.dart';
@@ -72,8 +71,8 @@ class _StudentCourseState extends State<StudentCourse> {
         if (documentSnapshot.exists) {
           var data = documentSnapshot.data();
           lecturerList.add(data);
-          // debugPrint(data.toString());
           setState(() {
+          // debugPrint(data.toString());
             lecturerNameList = lecturerList;
             itemList = courseList;
             courseIdListGlobal = courseIdList;
@@ -82,8 +81,8 @@ class _StudentCourseState extends State<StudentCourse> {
         }
 
         List<Map<String, dynamic>?> tempAnnouncementList = [];
-
         //  Fetch announcements
+
         var query = await db
             .collection('course_announcement')
             .where('course_id',
