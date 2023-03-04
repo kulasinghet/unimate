@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:unimate/student/gpa_calculator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 import 'all_course.dart';
 import 'assingment.dart';
@@ -60,7 +63,10 @@ class _StudentDrawerState extends State<StudentDrawer> {
             leading: const Icon(Icons.score),
             title: const Text('GPA Calculator'),
             onTap: () {
-              // TODO: Handle tasks tap
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (BuildContext context) {
+                return const GPACalculator();
+              }));
             },
           ),
           ListTile(
@@ -74,11 +80,17 @@ class _StudentDrawerState extends State<StudentDrawer> {
             leading: const Icon(Icons.exit_to_app),
             title: const Text('Logout'),
             onTap: () {
-              // TODO: Handle tasks tap
+              clearSharedPrefs();
+              Navigator.pushNamed(context, '/login');
             },
           )
         ],
       ),
     );
+  }
+
+  Future<void> clearSharedPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
   }
 }
