@@ -1,9 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:unimate/student_drawer.dart';
 import 'addNewEvent.dart';
 import 'studentEvent.dart';
 
-void main() => runApp(const MyApp());
+void main() async {
+  // Initialize Firebase
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
 
@@ -23,12 +33,69 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class EventListBuilder extends StatelessWidget{
-  var items = List<String>.generate(5, (index) => 'Item ${index+1}');
-  var dates = List<String>.generate(5, (index) => 'Item ${index+1}');
-  var eventId = '0';
+class EventListBuilder extends StatefulWidget{
 
   EventListBuilder({super.key});
+
+  @override
+  State<EventListBuilder> createState() => _EventListBuilderState();
+}
+
+class _EventListBuilderState extends State<EventListBuilder> {
+
+  List<Map<String, dynamic>?> eventNameList = [];
+  List<Map<String, dynamic>?> eventDateList = [];
+  // List<Map<String, dynamic>?> eventIdList = [];
+
+  var items = List<String>.generate(5, (index) => 'Item ${index+1}');
+  var dates = List<String>.generate(5, (index) => 'Item ${index+1}');
+
+  var eventId = '0';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAllEvents();
+  }
+
+  Future fetchAllEvents() async {
+    try{
+      print("Hello");
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userId = prefs.getString('userId');
+
+      var db = FirebaseFirestore.instance;
+
+      List<String> eventIdList = [];
+
+      var query = await db
+          .collection('event')
+          .where('members',
+          arrayContains:
+          FirebaseFirestore.instance.collection('users').doc(userId))
+          .get()
+          .then((querySnapshot) {
+        for (var docSnapshot in querySnapshot.docs) {
+          eventIdList.add(docSnapshot.data().entries.elementAt(1).value.id);
+        }
+      });
+
+      debugPrint(eventIdList.first);
+    }
+    on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+        return 1;
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+        return 2;
+      }
+    } catch (e) {
+      print(e);
+      return 3;
+    }
+    return 3;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,5 +192,4 @@ class EventListBuilder extends StatelessWidget{
       ),
     );
   }
-
 }
