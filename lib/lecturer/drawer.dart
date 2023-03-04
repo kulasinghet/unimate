@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:unimate/student/gpa_calculator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-
-import 'all_course.dart';
-import 'assingment.dart';
-
-class StudentDrawer extends StatefulWidget {
-  const StudentDrawer({Key? key}) : super(key: key);
+class LecturerDrawer extends StatefulWidget {
+  const LecturerDrawer({Key? key}) : super(key: key);
 
   @override
-  State<StudentDrawer> createState() => _StudentDrawerState();
+  State<LecturerDrawer> createState() => _LecturerDrawerState();
 }
 
-class _StudentDrawerState extends State<StudentDrawer> {
+class _LecturerDrawerState extends State<LecturerDrawer> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -38,7 +46,7 @@ class _StudentDrawerState extends State<StudentDrawer> {
             onTap: () {
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (BuildContext context) {
-                return const StudentAllCoursePage();
+                return const Placeholder();
               }));
             },
           ),
@@ -53,20 +61,14 @@ class _StudentDrawerState extends State<StudentDrawer> {
             leading: const Icon(Icons.assignment_ind),
             title: const Text('All Assignments'),
             onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (BuildContext context) {
-                return const StudentAssignment();
-              }));
+              // TODO: Handle friends tap
             },
           ),
           ListTile(
             leading: const Icon(Icons.score),
             title: const Text('GPA Calculator'),
             onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (BuildContext context) {
-                return const GPACalculator();
-              }));
+              // TODO: Handle tasks tap
             },
           ),
           ListTile(
@@ -80,17 +82,11 @@ class _StudentDrawerState extends State<StudentDrawer> {
             leading: const Icon(Icons.exit_to_app),
             title: const Text('Logout'),
             onTap: () {
-              clearSharedPrefs();
-              Navigator.pushNamed(context, '/login');
+              // TODO: Handle tasks tap
             },
           )
         ],
       ),
     );
-  }
-
-  Future<void> clearSharedPrefs() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.clear();
   }
 }
