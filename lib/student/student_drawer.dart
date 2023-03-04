@@ -34,7 +34,7 @@ class _StudentDrawerState extends State<StudentDrawer> {
             onTap: () {
               Navigator.of(context)
                   .push(MaterialPageRoute(builder: (BuildContext context) {
-                return const AllCoursePage();
+                return const StudentAllCoursePage();
               }));
             },
           ),

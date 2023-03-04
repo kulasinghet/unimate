@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:unimate/student/course.dart';
 import 'package:unimate/student/student_drawer.dart';
 
-class AllCoursePage extends StatefulWidget {
-  const AllCoursePage({Key? key}) : super(key: key);
+class StudentAllCoursePage extends StatefulWidget {
+  const StudentAllCoursePage({Key? key}) : super(key: key);
 
   @override
-  State<AllCoursePage> createState() => _AllCoursePageState();
+  State<StudentAllCoursePage> createState() => _StudentAllCoursePageState();
 }
 
-class _AllCoursePageState extends State<AllCoursePage> {
+class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
   @override
   Widget build(BuildContext context) {
     final List<String> _items = [
@@ -27,7 +28,7 @@ class _AllCoursePageState extends State<AllCoursePage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("All Courses"),
+          title: const Text("All Courses"),
         ),
         drawer: const StudentDrawer(),
         body: Padding(
@@ -48,15 +49,15 @@ class _AllCoursePageState extends State<AllCoursePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
+                        const Text(
                           'SCS2012 Data Structures and Algorithms',
                           style: TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 8.0),
-                        Text(
+                        const SizedBox(height: 8.0),
+                        const Text(
                           'Saman Kumara',
                           style: TextStyle(
                             fontSize: 16.0,
@@ -69,7 +70,11 @@ class _AllCoursePageState extends State<AllCoursePage> {
                             SizedBox(
                               width: 120.0,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+                                    return const StudentCourse();
+                                  }));
+                                },
                                 child: Text('Enter'),
                               ),
                             ),
