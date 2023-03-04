@@ -252,4 +252,11 @@ class _AttendanceCheckState extends State<AttendanceCheck> {
     return String.fromCharCodes(Iterable.generate(
         12, (_) => chars.codeUnitAt(random.nextInt(chars.length))));
   }
+
+  @override
+  Future<void> dispose() async {
+    super.dispose();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('courseCodeForAttendance', '');
+  }
 }
