@@ -230,7 +230,7 @@ class _RegisterLecturerState extends State<RegisterLecturer> {
           'name': name,
           'email': email,
           'regNo': regNo,
-          'role': 'student',
+          'role': 'lecturer',
         });
         return 0;
       } else {
