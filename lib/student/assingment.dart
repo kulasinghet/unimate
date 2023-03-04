@@ -26,7 +26,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: 8.0),
+                padding: const EdgeInsets.only(top: 8.0, left: 6, right: 6),
                 child: Container(
                   decoration: const BoxDecoration(
                     color: Colors.amber,
@@ -35,8 +35,8 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                   width: double.infinity,
                   child: Padding(
                     padding: const EdgeInsets.only(
-                      left: 8.0,
-                      right: 8.0,
+                      left: 12.0,
+                      right: 12.0,
                     ),
                     child: DropdownButton<String>(
                       dropdownColor: Colors.amber,
