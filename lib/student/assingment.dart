@@ -13,7 +13,7 @@ class StudentAssignment extends StatefulWidget {
 class _StudentAssignmentState extends State<StudentAssignment> {
   @override
   Widget build(BuildContext context) {
-    String _selectedOption = 'Option 1';
+    String? _selectedOption = 'All Assignments';
 
     return SafeArea(
       child: Scaffold(
@@ -41,7 +41,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                     child: DropdownButton<String>(
                       dropdownColor: Colors.amber,
                       isExpanded: true,
-                      value: 'All Assignments',
+                      value: _selectedOption,
                       icon: const Icon(Icons.arrow_drop_down),
                       iconSize: 24,
                       elevation: 16,
@@ -53,7 +53,12 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                         height: 2,
                         color: Colors.amber,
                       ),
-                      onChanged: (String? newValue) {},
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedOption = newValue;
+                        });
+                        debugPrint(_selectedOption);
+                      },
                       items: <String>[
                         'All Assignments',
                         'Data Structures and Algorithms',
@@ -62,6 +67,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
+                          onTap: () {},
                         );
                       }).toList(),
                     ),

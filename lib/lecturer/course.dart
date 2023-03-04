@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unimate/lecturer/cource_assign.dart';
 import 'package:unimate/lecturer/cource_edit.dart';
+
+import 'AttendanceCheck.dart';
 
 class LectureCourse extends StatefulWidget {
   const LectureCourse({Key? key}) : super(key: key);
@@ -33,7 +36,8 @@ class _LectureCourseState extends State<LectureCourse>
         actions: <Widget>[
           IconButton(
             onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (BuildContext context) {
                 return const EditCourse();
               }));
             },
@@ -135,7 +139,17 @@ class _LectureCourseState extends State<LectureCourse>
                               padding:
                                   MaterialStatePropertyAll(EdgeInsets.all(6.0)),
                               iconSize: MaterialStatePropertyAll(40)),
-                          onPressed: () {},
+                          onPressed: () async {
+                            if (await setCourseCodeForAttendance('SCS1202')) {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AttendanceCheck()));
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Error')));
+                            }
+                          },
                           child: const Icon(Icons.qr_code_2)),
                     ),
                     Container(
@@ -150,25 +164,12 @@ class _LectureCourseState extends State<LectureCourse>
                                   MaterialStatePropertyAll(EdgeInsets.all(6.0)),
                               iconSize: MaterialStatePropertyAll(40)),
                           onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (BuildContext context) {
                               return const AssignedStudentsList();
                             }));
                           },
                           child: const Icon(Icons.manage_accounts)),
-                    ),
-                    Container(
-                      width: 60,
-                      height: 60,
-                      margin: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: ElevatedButton(
-                          style: const ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll(
-                                  Color.fromRGBO(201, 164, 73, 1.0)),
-                              padding:
-                                  MaterialStatePropertyAll(EdgeInsets.all(6.0)),
-                              iconSize: MaterialStatePropertyAll(40)),
-                          onPressed: () {},
-                          child: const Icon(Icons.timer)),
                     ),
                   ],
                 ),
@@ -285,7 +286,8 @@ class _LectureCourseState extends State<LectureCourse>
           title: const Text('Create an Announcement'),
           content: TextField(
             controller: _textFieldController,
-            decoration: const InputDecoration(hintText: "Please add the description"),
+            decoration:
+                const InputDecoration(hintText: "Please add the description"),
           ),
           actions: <Widget>[
             TextButton(
@@ -304,5 +306,18 @@ class _LectureCourseState extends State<LectureCourse>
         );
       },
     );
+  }
+
+  Future<bool> setCourseCodeForAttendance(String courseCode) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('courseCodeForAttendance', courseCode);
+    print(prefs.getString('courseCodeForAttendance'));
+
+    if (prefs.getString('courseCodeForAttendance') == courseCode) {
+      print('Course code set for attendance');
+      return true;
+    } else {
+      return false;
+    }
   }
 }
