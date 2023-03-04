@@ -1,39 +1,126 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:unimate/student_drawer.dart';
+import 'package:unimate/student/course.dart';
+import 'package:unimate/student/student_drawer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AllCoursePage extends StatefulWidget {
-  const AllCoursePage({Key? key}) : super(key: key);
+class StudentAllCoursePage extends StatefulWidget {
+  const StudentAllCoursePage({Key? key}) : super(key: key);
 
   @override
-  State<AllCoursePage> createState() => _AllCoursePageState();
+  State<StudentAllCoursePage> createState() => _StudentAllCoursePageState();
 }
 
-class _AllCoursePageState extends State<AllCoursePage> {
+class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
+  List<Map<String, dynamic>?> itemList = [];
+  List<Map<String, dynamic>?> lecturerNameList = [];
+  List<String> courseIdListGlobal = [];
+
+  @override
+  void initState() {
+    fetchAllCourses();
+    super.initState();
+  }
+
+  Future<int> fetchAllCourses() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userId = prefs.getString('userId');
+
+      var db = FirebaseFirestore.instance;
+
+      List<String> courseIdList = [];
+
+      var query = await db
+          .collection('student_course')
+          .where('student_id',
+          isEqualTo:
+          FirebaseFirestore.instance.collection('users').doc(userId))
+          .get()
+          .then((querySnapshot) {
+        for (var docSnapshot in querySnapshot.docs) {
+          // courseIdList.add(docSnapshot.data().entries.elementAt(1).value.id);
+          docSnapshot.data().entries.forEach((element) {
+            if(element.key == 'course_id') {
+              courseIdList.add(element.value.id);
+            }
+          });
+        }
+      });
+
+      debugPrint(courseIdList.first);
+
+      List<Map<String, dynamic>?> courseList = [];
+      List<Map<String, dynamic>?> lecturerList = [];
+
+      // Fetch course details and lecture name
+      courseIdList.forEach((courseId) async {
+        var collectionRef = db.collection('course');
+        var documentId = courseId;
+        var documentRef = collectionRef.doc(documentId);
+
+        var documentSnapshot = await documentRef.get();
+        // Only fetch lecturer details when there is valid course
+        if (documentSnapshot.exists) {
+          var data = documentSnapshot.data();
+          courseList.add(data);
+          // debugPrint(data.toString());
+
+          String lecturerId = '';
+          documentSnapshot.data()?.entries.forEach((element) {
+            if(element.key == 'lecture_id') {
+              lecturerId = element.value.id;
+            }
+          });
+
+          collectionRef = db.collection('users');
+          documentRef = collectionRef.doc(lecturerId);
+          documentSnapshot = await documentRef.get();
+          documentSnapshot = await documentRef.get();
+
+          if (documentSnapshot.exists) {
+            var data = documentSnapshot.data();
+            lecturerList.add(data);
+            // debugPrint(data.toString());
+            setState(() {
+              lecturerNameList = lecturerList;
+              itemList = courseList;
+              courseIdListGlobal = courseIdList;
+              // debugPrint(lecturerNameList[0].toString());
+            });
+          }
+        }
+      });
+
+
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+        return 1;
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+        return 2;
+      }
+    } catch (e) {
+      print(e);
+      return 3;
+    }
+    return 3;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<String> _items = [
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4',
-      'Item 5',
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4',
-      'Item 5'
-    ];
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Text("All Courses"),
+          title: const Text("All Courses"),
         ),
         drawer: const StudentDrawer(),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListView.builder(
-              itemCount: 10,
+              itemCount: itemList.length,
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                   elevation: 1,
@@ -49,16 +136,16 @@ class _AllCoursePageState extends State<AllCoursePage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          'SCS2012 Data Structures and Algorithms',
-                          style: TextStyle(
+                          itemList[index]!['code'] + " " + itemList[index]!['name'],
+                          style: const TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 8.0),
+                        const SizedBox(height: 8.0),
                         Text(
-                          'Saman Kumara',
-                          style: TextStyle(
+                          lecturerNameList[index]!['name'],
+                          style: const TextStyle(
                             fontSize: 16.0,
                           ),
                         ),
@@ -69,7 +156,15 @@ class _AllCoursePageState extends State<AllCoursePage> {
                             SizedBox(
                               width: 120.0,
                               child: ElevatedButton(
-                                onPressed: () {},
+                                onPressed: () async {
+                                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                                  prefs.setString("courseId", courseIdListGlobal[index]);
+
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (BuildContext context) {
+                                        return const StudentCourse();
+                                      }));
+                                },
                                 child: Text('Enter'),
                               ),
                             ),
