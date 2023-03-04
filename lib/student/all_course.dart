@@ -15,6 +15,7 @@ class StudentAllCoursePage extends StatefulWidget {
 class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
   List<Map<String, dynamic>?> itemList = [];
   List<Map<String, dynamic>?> lecturerNameList = [];
+  List<String> courseIdListGlobal = [];
 
   @override
   void initState() {
@@ -85,6 +86,7 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
             setState(() {
               lecturerNameList = lecturerList;
               itemList = courseList;
+              courseIdListGlobal = courseIdList;
               // debugPrint(lecturerNameList[0].toString());
             });
           }
@@ -154,7 +156,10 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
                             SizedBox(
                               width: 120.0,
                               child: ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
+                                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                                  prefs.setString("courseId", courseIdListGlobal[index]);
+
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (BuildContext context) {
                                     return const StudentCourse();
