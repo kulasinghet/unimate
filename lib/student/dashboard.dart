@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:unimate/student/todayItem.dart';
+import 'package:unimate/student/student_drawer.dart';
+import 'package:unimate/student/today_item.dart';
 
 class StudentDashboard extends StatefulWidget {
   const StudentDashboard({Key? key}) : super(key: key);
@@ -36,70 +37,7 @@ class _StudentDashboardState extends State<StudentDashboard> {
           },
           selectedIndex: currentPage,
         ),
-        drawer: Drawer(
-          child: ListView(
-            padding: EdgeInsets.zero,
-            children: <Widget>[
-              const DrawerHeader(
-                decoration: BoxDecoration(
-                  color: Colors.amber,
-                ),
-                child: Text(
-                  'Main Menu',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-              ListTile(
-                leading: const Icon(Icons.library_books),
-                title: const Text('All Courses'),
-                onTap: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (BuildContext context) {
-                    return const TodayEventPage();
-                  }));
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.event),
-                title: const Text('All Events'),
-                onTap: () {
-                  // TODO: Handle notifications tap
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.assignment_ind),
-                title: const Text('All Assignments'),
-                onTap: () {
-                  // TODO: Handle friends tap
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.score),
-                title: const Text('GPA Calculator'),
-                onTap: () {
-                  // TODO: Handle tasks tap
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.person),
-                title: const Text('Profile'),
-                onTap: () {
-                  // TODO: Handle tasks tap
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.exit_to_app),
-                title: const Text('Logout'),
-                onTap: () {
-                  // TODO: Handle tasks tap
-                },
-              )
-            ],
-          ),
-        ),
+        drawer: const StudentDrawer(),
       ),
     );
   }
