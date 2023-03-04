@@ -39,7 +39,12 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
           .get()
           .then((querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
-          courseIdList.add(docSnapshot.data().entries.elementAt(1).value.id);
+          // courseIdList.add(docSnapshot.data().entries.elementAt(1).value.id);
+          docSnapshot.data().entries.forEach((element) {
+            if(element.key == 'course_id') {
+              courseIdList.add(element.value.id);
+            }
+          });
         }
       });
 
