@@ -1,6 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:unimate/student/course.dart';
 import 'package:unimate/student/student_drawer.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StudentAllCoursePage extends StatefulWidget {
   const StudentAllCoursePage({Key? key}) : super(key: key);
@@ -10,21 +13,97 @@ class StudentAllCoursePage extends StatefulWidget {
 }
 
 class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
+  List<Map<String, dynamic>?> itemList = [];
+  List<Map<String, dynamic>?> lecturerNameList = [];
+
+  @override
+  void initState() {
+    fetchAllCourses();
+    super.initState();
+  }
+
+  Future<int> fetchAllCourses() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? userId = prefs.getString('userId');
+
+      var db = FirebaseFirestore.instance;
+
+      List<String> courseIdList = [];
+
+      var query = await db
+          .collection('student_course')
+          .where('student_id',
+              isEqualTo:
+                  FirebaseFirestore.instance.collection('users').doc(userId))
+          .get()
+          .then((querySnapshot) {
+        for (var docSnapshot in querySnapshot.docs) {
+          courseIdList.add(docSnapshot.data().entries.elementAt(1).value.id);
+        }
+      });
+
+      debugPrint(courseIdList.first);
+
+      List<Map<String, dynamic>?> courseList = [];
+      List<Map<String, dynamic>?> lecturerList = [];
+
+      // Fetch course details and lecture name
+      courseIdList.forEach((courseId) async {
+        var collectionRef = db.collection('course');
+        var documentId = courseId;
+        var documentRef = collectionRef.doc(documentId);
+
+        var documentSnapshot = await documentRef.get();
+        // Only fetch lecturer details when there is valid course
+        if (documentSnapshot.exists) {
+          var data = documentSnapshot.data();
+          courseList.add(data);
+          // debugPrint(data.toString());
+
+          String lecturerId = '';
+          documentSnapshot.data()?.entries.forEach((element) {
+            if(element.key == 'lecture_id') {
+              lecturerId = element.value.id;
+            }
+          });
+
+          collectionRef = db.collection('users');
+          documentRef = collectionRef.doc(lecturerId);
+          documentSnapshot = await documentRef.get();
+          documentSnapshot = await documentRef.get();
+
+          if (documentSnapshot.exists) {
+            var data = documentSnapshot.data();
+            lecturerList.add(data);
+            // debugPrint(data.toString());
+            setState(() {
+              lecturerNameList = lecturerList;
+              itemList = courseList;
+              // debugPrint(lecturerNameList[0].toString());
+            });
+          }
+        }
+      });
+
+
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+        return 1;
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+        return 2;
+      }
+    } catch (e) {
+      print(e);
+      return 3;
+    }
+    return 3;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final List<String> _items = [
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4',
-      'Item 5',
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4',
-      'Item 5'
-    ];
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -34,7 +113,7 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListView.builder(
-              itemCount: 10,
+              itemCount: itemList.length,
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                   elevation: 1,
@@ -49,17 +128,17 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const Text(
-                          'SCS2012 Data Structures and Algorithms',
-                          style: TextStyle(
+                         Text(
+                          itemList[index]!['code'] + " " + itemList[index]!['name'],
+                          style: const TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 8.0),
-                        const Text(
-                          'Saman Kumara',
-                          style: TextStyle(
+                         Text(
+                          lecturerNameList[index]!['name'],
+                          style: const TextStyle(
                             fontSize: 16.0,
                           ),
                         ),
@@ -71,7 +150,8 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
                               width: 120.0,
                               child: ElevatedButton(
                                 onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+                                  Navigator.of(context).push(MaterialPageRoute(
+                                      builder: (BuildContext context) {
                                     return const StudentCourse();
                                   }));
                                 },
