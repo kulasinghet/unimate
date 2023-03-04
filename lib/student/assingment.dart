@@ -56,8 +56,8 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                       onChanged: (String? newValue) {},
                       items: <String>[
                         'All Assignments',
-                        'Past Assignments',
-                        'Upcoming Assignments'
+                        'Data Structures and Algorithms',
+                        'Database 2'
                       ].map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
