@@ -28,10 +28,6 @@ class _AttendanceCheckState extends State<AttendanceCheck> {
   onInit() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // Get the current location
-    Position position = await getLocation();
-    print(position);
-
     setState(() {
       courseCode = prefs.getString('courseCodeForAttendance')!;
       lecturerId = prefs.getString('userId')!;
@@ -199,7 +195,7 @@ class _AttendanceCheckState extends State<AttendanceCheck> {
     });
   }
 
-  handleAttendanceCheck() {
+  handleAttendanceCheck() async {
     // start the attendance check
 
     DateTime attendanceStartTime = DateTime.now();
@@ -225,6 +221,8 @@ class _AttendanceCheckState extends State<AttendanceCheck> {
       }
     });
 
+    Position position = await getLocation();
+
 // save the attendance check to the database
     FirebaseFirestore.instance
         .collection('course')
@@ -236,6 +234,7 @@ class _AttendanceCheckState extends State<AttendanceCheck> {
         doc.reference.update({
           'attendance_check': isAttendanceChecking,
           'attendance_start_time': attendanceStartTime,
+          'location': GeoPoint(position.latitude, position.longitude),
         });
       });
     });
