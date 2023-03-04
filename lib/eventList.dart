@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unimate/student_drawer.dart';
 import 'addNewEvent.dart';
 import 'studentEvent.dart';
 
@@ -11,87 +12,116 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    var items = List<String>.generate(20, (index) => 'Item ${index+1}');
-    var dates = List<String>.generate(20, (index) => 'Item ${index+1}');
-
     return MaterialApp(
       title: 'Event List',
       theme: ThemeData(
         primarySwatch: Colors.amber,
       ),
       debugShowCheckedModeBanner: false,
-      home: EventListBuilder(items,dates),
+      home: EventListBuilder(),
     );
   }
 }
 
 class EventListBuilder extends StatelessWidget{
-  var items;
-  var date;
+  var items = List<String>.generate(5, (index) => 'Item ${index+1}');
+  var dates = List<String>.generate(5, (index) => 'Item ${index+1}');
   var eventId = '0';
-  EventListBuilder(this.items,this.date);
+
+  EventListBuilder({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Event List',style: TextStyle(fontSize: 20.0),),
-      ),
-      body: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (BuildContext context,int index){
-          return Column(
-            children: [
-              ListTile(
-                leading: Image.network("https://madhack.ucscieee.com/assets/img/sculptures/david_t-shirt-min.png"),
-                title:Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    // Text(date[index]),
-                    const Expanded(
-                        child: Text(
-                          "Jan 12",style: TextStyle(color: Colors.blue),
-                          maxLines: 2,
-                        )
-                    ),
-                    Expanded(
-                      child: Text(
-                        "MadHack IEEEucsc czdsadsdfsdf sdsdfsdfsd ${items[index]}",
-                        maxLines: 2,
-                      ),
-                    )
-                  ],
-                ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 20.0),
-                onTap:() {
-                  print("clicked");
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => studentEvent(eventId)),
-                  );
-                }
-                ,
-              ),
-              const Divider(),
-            ],
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          print("Add new");
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => addNewEvent(),
-            ),
-          );
+    final List<String> _items = [
+      'Item 1',
+      'Item 2',
+      'Item 3',
+      'Item 4',
+      'Item 5',
+      'Item 1',
+      'Item 2',
+      'Item 3',
+      'Item 4',
+      'Item 5'
+    ];
 
-        },
-        tooltip: "New Event",
-        backgroundColor: Colors.amber,
-        child: const Icon(Icons.add),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("All Events"),
+        ),
+        drawer: const StudentDrawer(),
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Card(
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(
+                      color: Theme.of(context).colorScheme.background,
+                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(12)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          'MADhack 2.0 Delegates',
+                          style: TextStyle(
+                            fontSize: 22.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 8.0),
+                        Text(
+                          'Jan 12',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        SizedBox(height: 16.0),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            SizedBox(
+                              width: 120.0,
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => studentEvent(eventId,'MADhack 2.0 Delegates')),
+                                  );
+                                },
+                                child: const Text('Enter'),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => addNewEvent(),
+              ),
+            );
+
+          },
+          tooltip: "Create an Event",
+          backgroundColor: Colors.amber,
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
