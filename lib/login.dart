@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatefulWidget {
   String email = '';
@@ -191,14 +192,21 @@ class _LoginState extends State<Login> {
           .collection('user-roles')
           .where('email', isEqualTo: email)
           .get()
-          .then((value) => value.docs[0].data()['userRole'] as String);
+          .then((value) => value.docs[0].data());
 
       // log userRoleData
       print(userRoleData);
 
-      if (userRoleData == 'student') {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = await userCredential.user?.getIdToken();
+      String userId = userCredential.user!.uid;
+      prefs.setString('token', token!);
+      prefs.setString('userRole', userRoleData['userRole']);
+      prefs.setString('userId', userId);
+
+      if (userRoleData['userRole'] == 'student') {
         return 0;
-      } else if (userRoleData == 'lecturer') {
+      } else if (userRoleData['userRole'] == 'lecturer') {
         return 4;
       } else {
         return 5;
