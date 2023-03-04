@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:unimate/student/dashboard.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -20,19 +21,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      builder: (context, child) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text('Flutter Demo'),
-          ),
-          body: child,
-        );
-      },
-      home: Text('First Route'),
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(primarySwatch: Colors.amber),
+      home: const StudentDashboard(),
     );
   }
 }
+
