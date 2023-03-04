@@ -1,9 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unimate/student/course.dart';
 import 'package:unimate/student/student_drawer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StudentAllCoursePage extends StatefulWidget {
   const StudentAllCoursePage({Key? key}) : super(key: key);
@@ -41,7 +41,7 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
         for (var docSnapshot in querySnapshot.docs) {
           // courseIdList.add(docSnapshot.data().entries.elementAt(1).value.id);
           docSnapshot.data().entries.forEach((element) {
-            if(element.key == 'course_id') {
+            if (element.key == 'course_id') {
               courseIdList.add(element.value.id);
             }
           });
@@ -68,7 +68,7 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
 
           String lecturerId = '';
           documentSnapshot.data()?.entries.forEach((element) {
-            if(element.key == 'lecture_id') {
+            if (element.key == 'lecture_id') {
               lecturerId = element.value.id;
             }
           });
@@ -90,8 +90,6 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
           }
         }
       });
-
-
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -133,15 +131,17 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                         Text(
-                          itemList[index]!['code'] + " " + itemList[index]!['name'],
+                        Text(
+                          itemList[index]!['code'] +
+                              " " +
+                              itemList[index]!['name'],
                           style: const TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 8.0),
-                         Text(
+                        Text(
                           lecturerNameList[index]!['name'],
                           style: const TextStyle(
                             fontSize: 16.0,

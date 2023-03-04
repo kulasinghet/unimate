@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:unimate/student/assingment.dart';
 
@@ -71,8 +70,7 @@ class _StudentCourseState extends State<StudentCourse> {
                     SizedBox(
                       width: 150,
                       child: ElevatedButton(
-                        onPressed: () {
-                        },
+                        onPressed: () {},
                         child: const Text("Mark Attendance"),
                       ),
                     ),
@@ -80,8 +78,8 @@ class _StudentCourseState extends State<StudentCourse> {
                       width: 150,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.of(context)
-                              .push(MaterialPageRoute(builder: (BuildContext context) {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) {
                             return const StudentAssignment();
                           }));
                         },
