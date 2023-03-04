@@ -186,10 +186,12 @@ class _LoginState extends State<Login> {
       // Reference to the Firestore collection
 
       var db = FirebaseFirestore.instance;
+      String userId = userCredential.user!.uid;
       //
       // // Get the user role
       var userRoleData = await db
-          .collection('user-roles')
+          .collection('users')
+          .where('userId', isEqualTo: userId)
           .where('email', isEqualTo: email)
           .get()
           .then((value) => value.docs[0].data());
@@ -199,14 +201,13 @@ class _LoginState extends State<Login> {
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = await userCredential.user?.getIdToken();
-      String userId = userCredential.user!.uid;
       prefs.setString('token', token!);
-      prefs.setString('userRole', userRoleData['userRole']);
+      prefs.setString('role', userRoleData['role']);
       prefs.setString('userId', userId);
 
-      if (userRoleData['userRole'] == 'student') {
+      if (userRoleData['role'] == 'student') {
         return 0;
-      } else if (userRoleData['userRole'] == 'lecturer') {
+      } else if (userRoleData['role'] == 'lecturer') {
         return 4;
       } else {
         return 5;
