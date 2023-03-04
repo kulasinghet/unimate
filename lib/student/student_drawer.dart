@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'all_course.dart';
 
@@ -70,11 +71,17 @@ class _StudentDrawerState extends State<StudentDrawer> {
             leading: const Icon(Icons.exit_to_app),
             title: const Text('Logout'),
             onTap: () {
-              // TODO: Handle tasks tap
+              clearSharedPrefs();
+              Navigator.pushNamed(context, '/login');
             },
           )
         ],
       ),
     );
+  }
+
+  Future<void> clearSharedPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
   }
 }
