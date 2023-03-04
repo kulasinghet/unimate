@@ -183,11 +183,16 @@ class _LoginState extends State<Login> {
         password: password,
       );
 
+      if (userCredential.user != null) {
+        print('User logged in');
+      }
       // Reference to the Firestore collection
 
       var db = FirebaseFirestore.instance;
       String userId = userCredential.user!.uid;
-      //
+
+      print(userId + ' ' + email);
+
       // // Get the user role
       var userRoleData = await db
           .collection('users')
