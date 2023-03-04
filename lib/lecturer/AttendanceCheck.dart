@@ -232,7 +232,7 @@ class _AttendanceCheckState extends State<AttendanceCheck> {
       querySnapshot.docs.forEach((doc) {
         // update the secret key
         doc.reference.update({
-          'attendance_check': isAttendanceChecking,
+          'attendance_enabled': isAttendanceChecking,
           'attendance_start_time': attendanceStartTime,
           'location': GeoPoint(position.latitude, position.longitude),
         });
@@ -240,7 +240,9 @@ class _AttendanceCheckState extends State<AttendanceCheck> {
     });
 
     if (!isAttendanceChecking) {
-      secretKey = '';
+      setState(() {
+        secretKey = '';
+      });
     }
   }
 
