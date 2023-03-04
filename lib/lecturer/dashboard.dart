@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:unimate/lecturer/assignment_list.dart';
+import 'package:unimate/lecturer/course_list.dart';
 import 'package:unimate/lecturer/drawer.dart';
-import 'package:unimate/student/today_item.dart';
 
 class LectureDashboard extends StatefulWidget {
   const LectureDashboard({Key? key}) : super(key: key);
@@ -12,7 +13,7 @@ class LectureDashboard extends StatefulWidget {
 class _LectureDashboardState extends State<LectureDashboard> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   var currentPage = 0;
-  List<Widget> pages = const [TodayLecturesPage(), TodayEventPage(), TodayAssignmentPage(), ClassNotification()];
+  List<Widget> pages = const [CourseListPage(), AssignmentListPage()];
 
   @override
   void initState() {
