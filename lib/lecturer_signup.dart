@@ -2,17 +2,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class RegisterStudent extends StatefulWidget {
+class RegisterLecturer extends StatefulWidget {
   String regNo = '';
   String name = '';
   String email = '';
   String password = '';
 
   @override
-  _RegisterStudentState createState() => _RegisterStudentState();
+  _RegisterLecturerState createState() => _RegisterLecturerState();
 }
 
-class _RegisterStudentState extends State<RegisterStudent> {
+class _RegisterLecturerState extends State<RegisterLecturer> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -38,7 +38,7 @@ class _RegisterStudentState extends State<RegisterStudent> {
                   children: <Widget>[
                     SizedBox(height: 40),
                     Text(
-                      'Student Signup',
+                      'Lecturer Sign Up',
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
@@ -191,11 +191,11 @@ class _RegisterStudentState extends State<RegisterStudent> {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/login');
+                        Navigator.pushNamed(context, '/student/signup');
                       },
                     ),
                     TextButton(
-                      child: Text('Register as a lecturer'),
+                      child: Text('Register as a student'),
                       style: TextButton.styleFrom(
                         primary: Colors.amber[900],
                         textStyle: TextStyle(
@@ -204,7 +204,7 @@ class _RegisterStudentState extends State<RegisterStudent> {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/lecturer/signup');
+                        Navigator.pushNamed(context, '/student/signup');
                       },
                     ),
                   ],
@@ -230,7 +230,7 @@ class _RegisterStudentState extends State<RegisterStudent> {
           'name': name,
           'email': email,
           'regNo': regNo,
-          'role': 'lecturer',
+          'role': 'student',
         });
         return 0;
       } else {
