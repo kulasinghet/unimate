@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'all_course.dart';
+import 'student/all_course.dart';
 
 class StudentDrawer extends StatefulWidget {
   const StudentDrawer({Key? key}) : super(key: key);

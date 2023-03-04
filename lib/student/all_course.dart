@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:unimate/student/student_drawer.dart';
+import 'package:unimate/student_drawer.dart';
 
 class AllCoursePage extends StatefulWidget {
   const AllCoursePage({Key? key}) : super(key: key);
