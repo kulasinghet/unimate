@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unimate/student/assingment.dart';
 
 List<String> weekdays = [
@@ -18,6 +22,58 @@ class StudentCourse extends StatefulWidget {
 
 class _StudentCourseState extends State<StudentCourse> {
   String dropdownValue = weekdays.first;
+  // Map<String, dynamic>?
+
+  @override
+  void initState() {
+    fetchData();
+    super.initState();
+  }
+
+  Future<int> fetchData() async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? courseId = prefs.getString('courseId');
+      debugPrint(courseId.toString());
+
+      var db = FirebaseFirestore.instance;
+      var collectionRef = db.collection('course');
+      var documentId = courseId;
+      var documentRef = collectionRef.doc(documentId);
+
+      var documentSnapshot = await documentRef.get();
+      // Only fetch lecturer details when there is valid course
+      if (documentSnapshot.exists) {
+        var data = documentSnapshot.data();
+        // debugPrint(data.toString());
+
+        String lecturerId = '';
+        documentSnapshot
+            .data()
+            ?.entries
+            .forEach((element) {
+          if (element.key == 'lecture_id') {
+            lecturerId = element.value.id;
+          }
+        });
+        return 0;
+      }else {
+        return 1;
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+        return 1;
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+        return 2;
+      }
+    } catch (e) {
+      print(e);
+      return 3;
+    }
+    return 3;
+  }
 
   @override
   Widget build(BuildContext context) {
