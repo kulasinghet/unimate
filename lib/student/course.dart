@@ -26,7 +26,7 @@ class _StudentCourseState extends State<StudentCourse> {
           title: Text("Course Details"),
         ),
         body: Center(
-          child: Container(
+          child: SizedBox(
             height: double.infinity,
             child: SingleChildScrollView(
               child: Column(
@@ -43,6 +43,7 @@ class _StudentCourseState extends State<StudentCourse> {
                       ),
                     ),
                   ),
+                  Text("Saman Kumara"),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Card(
@@ -65,8 +66,99 @@ class _StudentCourseState extends State<StudentCourse> {
                       ),
                     ),
                   ),
-                  ElevatedButton(onPressed: (){}, child: Text("Mark Attendance"))
+                  SizedBox(
+                    width: 150,
+                    child: ElevatedButton(
+                        onPressed: () {}, child: const Text("Mark Attendance")),
+                  ),
+                  SizedBox(
+                    width: 150,
+                    child: ElevatedButton(
+                        onPressed: () {}, child: const Text("Assignments")),
+                  ),
 
+                  const SizedBox(height: 30,),
+
+                  const Text(
+                    'Announcements',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 28.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                        child: Card(
+                          elevation: 1,
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: Theme.of(context).colorScheme.background,
+                            ),
+                            borderRadius: const BorderRadius.all(Radius.circular(12)),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: const [
+                                Text(
+                                  '2022-04-01 08:00 AM',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 8.0),
+                                Text(
+                                  "s simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled",
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4.0, right: 4.0),
+                        child: Card(
+                          elevation: 1,
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              color: Theme.of(context).colorScheme.background,
+                            ),
+                            borderRadius: const BorderRadius.all(Radius.circular(12)),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: const [
+                                Text(
+                                  '2022-04-01 08:00 AM',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 8.0),
+                                Text(
+                                  "s simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled",
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ), 
+                    ],
+                  )
                 ],
               ),
             ),
