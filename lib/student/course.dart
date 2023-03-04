@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unimate/student/assingment.dart';
 
@@ -48,16 +47,13 @@ class _StudentCourseState extends State<StudentCourse> {
         // debugPrint(data.toString());
 
         String lecturerId = '';
-        documentSnapshot
-            .data()
-            ?.entries
-            .forEach((element) {
+        documentSnapshot.data()?.entries.forEach((element) {
           if (element.key == 'lecture_id') {
             lecturerId = element.value.id;
           }
         });
         return 0;
-      }else {
+      } else {
         return 1;
       }
     } on FirebaseAuthException catch (e) {
