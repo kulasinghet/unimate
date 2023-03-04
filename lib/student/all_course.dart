@@ -16,6 +16,7 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
   List<Map<String, dynamic>?> itemList = [];
   List<Map<String, dynamic>?> lecturerNameList = [];
   List<String> courseIdListGlobal = [];
+  int listSize = 0;
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
           .then((querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
           // courseIdList.add(docSnapshot.data().entries.elementAt(1).value.id);
+          debugPrint(docSnapshot.data().toString());
           docSnapshot.data().entries.forEach((element) {
             if(element.key == 'course_id') {
               courseIdList.add(element.value.id);
@@ -84,9 +86,18 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
             lecturerList.add(data);
             // debugPrint(data.toString());
             setState(() {
-              lecturerNameList = lecturerList;
               itemList = courseList;
+              lecturerNameList = lecturerList;
+              // Setting course ID list
+              itemList.forEach((element) {
+                element?.entries.forEach((pair) {
+                  if(pair.key == 'course_id') {
+                    courseIdList.add(pair.value.id);
+                  }
+                });
+              });
               courseIdListGlobal = courseIdList;
+              listSize = lecturerNameList.length;
               // debugPrint(lecturerNameList[0].toString());
             });
           }
@@ -120,7 +131,7 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListView.builder(
-              itemCount: itemList.length,
+              itemCount: listSize,
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                   elevation: 1,
