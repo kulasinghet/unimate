@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../addEventMember.dart';
+import 'addEventMember.dart';
 
 class ViewMembers extends StatefulWidget {
   @override

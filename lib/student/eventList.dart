@@ -3,45 +3,19 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:unimate/student_drawer.dart';
+import 'package:unimate/student/student_drawer.dart';
 import 'addNewEvent.dart';
 import 'studentEvent.dart';
 
-void main() async {
-  // Initialize Firebase
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+class EventList extends StatefulWidget{
 
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-
-  const MyApp({super.key});
+  EventList({super.key});
 
   @override
-  Widget build(BuildContext context) {
-
-    return MaterialApp(
-      title: 'Event List',
-      theme: ThemeData(
-        primarySwatch: Colors.amber,
-      ),
-      debugShowCheckedModeBanner: false,
-      home: EventListBuilder(),
-    );
-  }
+  State<EventList> createState() => _EventListState();
 }
 
-class EventListBuilder extends StatefulWidget{
-
-  EventListBuilder({super.key});
-
-  @override
-  State<EventListBuilder> createState() => _EventListBuilderState();
-}
-
-class _EventListBuilderState extends State<EventListBuilder> {
+class _EventListState extends State<EventList> {
 
   List<Map<String, dynamic>?> eventNameList = [];
   List<Map<String, dynamic>?> eventDateList = [];

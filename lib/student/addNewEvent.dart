@@ -1,6 +1,6 @@
 import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
-import 'package:unimate/student_drawer.dart';
+import 'package:unimate/student/student_drawer.dart';
 
 class addNewEvent extends StatefulWidget{
   const addNewEvent({super.key});

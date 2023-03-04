@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:unimate/student/addEventAnnouncement.dart';
+import 'package:unimate/student/student_drawer.dart';
 import 'package:unimate/student/viewMembers.dart';
-import 'package:unimate/student_drawer.dart';
 
 class studentEvent extends StatefulWidget{
 
