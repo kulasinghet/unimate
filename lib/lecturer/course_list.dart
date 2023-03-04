@@ -39,7 +39,7 @@ class _CourseListPageState extends State<CourseListPage> {
                           fontWeight: FontWeight.bold),
                     )),
                 title: const Text(
-                  "SCS2012 Data Structures and Algorithms",
+                  "Data Structures and Algorithms",
                   style: TextStyle(
                       color: Color.fromRGBO(0, 0, 0, .72),
                       fontWeight: FontWeight.bold),
@@ -48,7 +48,7 @@ class _CourseListPageState extends State<CourseListPage> {
 
                 subtitle: Row(
                   children: const <Widget>[
-                    Text(" Saman Kumara",
+                    Text("Saman Kumara",
                         style: TextStyle(color: Color.fromRGBO(0, 0, 0, .52)))
                   ],
                 ),

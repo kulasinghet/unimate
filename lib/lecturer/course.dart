@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:unimate/lecturer/cource_assign.dart';
+import 'package:unimate/lecturer/cource_edit.dart';
 
 class LectureCourse extends StatefulWidget {
   const LectureCourse({Key? key}) : super(key: key);
@@ -31,7 +32,11 @@ class _LectureCourseState extends State<LectureCourse>
         title: const Text("Course Details"),
         actions: <Widget>[
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+                return const EditCourse();
+              }));
+            },
             icon: const Icon(Icons.edit),
             tooltip: "Edit",
           ),
@@ -56,7 +61,7 @@ class _LectureCourseState extends State<LectureCourse>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          padding: const EdgeInsets.all(10),
+                          padding: const EdgeInsets.fromLTRB(2, 10, 10, 10),
                           margin: const EdgeInsets.fromLTRB(0, 0, 10, 0),
                           decoration: const BoxDecoration(
                               border: Border(
@@ -264,7 +269,7 @@ class _LectureCourseState extends State<LectureCourse>
           await _displayTextInputDialog(context);
           print(_textFieldController.text);
         },
-        tooltip: 'Increment',
+        tooltip: 'Create Announcement',
         child: const Icon(Icons.add),
       ),
     );
