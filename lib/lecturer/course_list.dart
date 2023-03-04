@@ -8,81 +8,59 @@ class CourseListPage extends StatefulWidget {
   State<CourseListPage> createState() => _CourseListPageState();
 }
 
-class _CourseListPageState extends State<CourseListPage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
+class _CourseListPageState extends State<CourseListPage> {
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-            itemCount: 10,
-            itemBuilder: (BuildContext context, int index) {
-              return Card(
-                elevation: 1,
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                    color: Theme.of(context).colorScheme.background,
-                  ),
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
+    return ListView.builder(
+        shrinkWrap: true,
+        itemCount: 10,
+        itemBuilder: (BuildContext context, int index) {
+          return Card(
+            color: const Color.fromRGBO(241, 214, 147, .8),
+            elevation: 1,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(12)),
+            ),
+            margin: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+            child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20.0, vertical: 10.0),
+                leading: Container(
+                    padding: const EdgeInsets.only(right: 12.0),
+                    height: double.infinity,
+                    decoration: const BoxDecoration(
+                        border: Border(
+                            right:
+                                BorderSide(width: 1.0, color: Colors.black26))),
+                    child: const Text(
+                      "SCS2012",
+                      style: TextStyle(
+                          color: Color.fromRGBO(0, 0, 0, .64),
+                          fontWeight: FontWeight.bold),
+                    )),
+                title: const Text(
+                  "SCS2012 Data Structures and Algorithms",
+                  style: TextStyle(
+                      color: Color.fromRGBO(0, 0, 0, .72),
+                      fontWeight: FontWeight.bold),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      const Text(
-                        'SCS2012 Data Structures and Algorithms',
-                        style: TextStyle(
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8.0),
-                      const Text(
-                        'Saman Kumara',
-                        style: TextStyle(
-                          fontSize: 16.0,
-                        ),
-                      ),
-                      const SizedBox(height: 16.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          SizedBox(
-                            width: 120.0,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (BuildContext context) {
-                                  return const LectureCourse();
-                                }));
-                              },
-                              child: const Text('Enter'),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                // subtitle: Text("Intermediate", style: TextStyle(color: Colors.white)),
+
+                subtitle: Row(
+                  children: const <Widget>[
+                    Text(" Saman Kumara",
+                        style: TextStyle(color: Color.fromRGBO(0, 0, 0, .52)))
+                  ],
                 ),
-              );
-            }),
-      ),
-    );
+                trailing: const Icon(Icons.keyboard_arrow_right,
+                    color: Color.fromRGBO(0, 0, 0, .32), size: 30.0),
+              onTap: (){
+                Navigator.of(context).push(MaterialPageRoute(builder: (BuildContext context) {
+                  return const LectureCourse();
+                }));
+              },
+            ),
+          );
+        });
   }
 }
