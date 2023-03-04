@@ -47,23 +47,6 @@ class _LecturerDrawerState extends State<LecturerDrawer> with SingleTickerProvid
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.library_books),
-            title: const Text('All Courses'),
-            onTap: () {
-              Navigator.of(context)
-                  .push(MaterialPageRoute(builder: (BuildContext context) {
-                return const Placeholder();
-              }));
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.event),
-            title: const Text('All Assignments'),
-            onTap: () {
-              // TODO: Handle notifications tap
-            },
-          ),
-          ListTile(
             leading: const Icon(Icons.person),
             title: const Text('Profile'),
             onTap: () {
