@@ -1,86 +1,45 @@
 import 'package:flutter/material.dart';
 
-class AllCoursePage extends StatefulWidget {
-  const AllCoursePage({Key? key}) : super(key: key);
+import 'package:unimate/login.dart';
+import 'package:unimate/student/dashboard.dart';
 
-  @override
-  State<AllCoursePage> createState() => _AllCoursePageState();
+import 'firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+Future<void> main() async {
+  bool isLoggedIn = false;
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+
+
+  runApp(MaterialApp(
+    title: 'Unimate',
+    theme: ThemeData(
+      primarySwatch: Colors.blue,
+    ),
+    initialRoute: isLoggedIn ? '/dashboard' : '/login',
+    routes: {
+      '/': (context) => MyApp(),
+      '/dashboard': (context) => Text('Second Route'),
+      '/login': (context) => Login(),
+    },
+  ));
 }
 
-class _AllCoursePageState extends State<AllCoursePage> {
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final List<String> _items = [
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4',
-      'Item 5',
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4',
-      'Item 5'
-    ];
-
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("All Courses"),
-        ),
-        drawer: const StudentDrawer(),
-        body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView.builder(
-              itemCount: 10,
-              itemBuilder: (BuildContext context, int index) {
-                return Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.background,
-                    ),
-                    borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          'SCS2012 Data Structures and Algorithms',
-                          style: TextStyle(
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 8.0),
-                        Text(
-                          'Saman Kumara',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                          ),
-                        ),
-                        SizedBox(height: 16.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            SizedBox(
-                              width: 120.0,
-                              child: ElevatedButton(
-                                onPressed: () {},
-                                child: Text('Enter'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }),
-        ),
-      ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(primarySwatch: Colors.amber),
+      home: const StudentDashboard(),
     );
   }
 }
