@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -102,13 +103,22 @@ class _LoginState extends State<Login> {
 
                         if (userLoggedIn == 0) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text("Logged in successfully."),
+                            content: Text('Welcome back!'),
                             backgroundColor: Colors.green[500],
                             // add text color
                           ));
                           // wait for 1 second
                           await Future.delayed(Duration(seconds: 1));
-                          Navigator.pushNamed(context, '/dashboard');
+                          Navigator.pushNamed(context, '/student/dashboard');
+                        } else if (userLoggedIn == 4) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                            content: Text('Welcome back!'),
+                            backgroundColor: Colors.green[500],
+                            // add text color
+                          ));
+                          // wait for 1 second
+                          await Future.delayed(Duration(seconds: 1));
+                          Navigator.pushNamed(context, '/lecturer/dashboard');
                         } else if (userLoggedIn == 1) {
                           print('No user found for that email.');
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -133,7 +143,7 @@ class _LoginState extends State<Login> {
                     ),
                     SizedBox(height: 20),
                     TextButton(
-                      child: Text('Create an account'),
+                      child: Text('Create an account as a student'),
                       style: TextButton.styleFrom(
                         primary: Colors.amber[900],
                         textStyle: TextStyle(
@@ -142,7 +152,20 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.pushNamed(context, '/signup');
+                        Navigator.pushNamed(context, '/student/signup');
+                      },
+                    ),
+                    TextButton(
+                      child: Text('Create an account as a lecturer'),
+                      style: TextButton.styleFrom(
+                        primary: Colors.amber[900],
+                        textStyle: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/lecturer/signup');
                       },
                     ),
                   ],
@@ -152,8 +175,6 @@ class _LoginState extends State<Login> {
   }
 
   Future<int> login(String email, String password) async {
-    print(email + ' ' + password);
-
     try {
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithEmailAndPassword(
@@ -161,9 +182,30 @@ class _LoginState extends State<Login> {
         password: password,
       );
 
-      print(userCredential.user);
-      return 0;
+      // Reference to the Firestore collection
+
+      var db = FirebaseFirestore.instance;
+      //
+      // // Get the user role
+      var userRoleData = await db
+          .collection('user-roles')
+          .where('email', isEqualTo: email)
+          .get()
+          .then((value) => value.docs[0].data()['userRole'] as String);
+
+      // log userRoleData
+      print(userRoleData);
+
+      if (userRoleData == 'student') {
+        return 0;
+      } else if (userRoleData == 'lecturer') {
+        return 4;
+      } else {
+        return 5;
+      }
       // Handle the successful login
+
+      return 0;
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
