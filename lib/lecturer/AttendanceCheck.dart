@@ -19,6 +19,7 @@ class _AttendanceCheckState extends State<AttendanceCheck> {
   String lecturerId = '';
   bool isAttendanceChecking = false;
   String attendanceButtonLabel = 'Start Attendance Check';
+  int attendanceCount = 0;
 
   Color attendanceButtonColor = Colors.lightGreenAccent;
 
@@ -27,7 +28,6 @@ class _AttendanceCheckState extends State<AttendanceCheck> {
 
   onInit() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
     setState(() {
       courseCode = prefs.getString('courseCodeForAttendance')!;
       lecturerId = prefs.getString('userId')!;
@@ -44,6 +44,9 @@ class _AttendanceCheckState extends State<AttendanceCheck> {
         // generate a random string
         attendanceButtonLabel = 'Stop Attendance Check';
       }
+
+      // get the attendance count
+      attendanceCount = getAttendanceCount(courseCode) as int;
     });
   }
 
@@ -147,6 +150,17 @@ class _AttendanceCheckState extends State<AttendanceCheck> {
                 ),
               ),
             },
+            SizedBox(
+              height: 20.0,
+            ),
+            Text(
+              'Attendance Count: $attendanceCount',
+              style: TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[600],
+              ),
+            ),
           ],
         ),
       ),
@@ -258,5 +272,19 @@ class _AttendanceCheckState extends State<AttendanceCheck> {
     super.dispose();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('courseCodeForAttendance', '');
+  }
+
+  Future<int> getAttendanceCount(String courseID) async {
+    try {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('student_attendance')
+          .where('code', isEqualTo: courseID)
+          .get();
+      print('Attendance count: ${snapshot.size}');
+      return snapshot.size;
+    } catch (e) {
+      print('Error getting attendance count: $e');
+      return -1;
+    }
   }
 }
