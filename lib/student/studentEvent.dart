@@ -1,29 +1,136 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unimate/student/addEventAnnouncement.dart';
 import 'package:unimate/student/student_drawer.dart';
 import 'package:unimate/student/viewMembers.dart';
+import 'package:intl/intl.dart';
 
 class studentEvent extends StatefulWidget{
 
-  String eventId;
-  String title;
-  studentEvent(this.eventId,this.title,{super.key});
+  String _eventId;
+  String _title;
+  studentEvent(this._eventId,this._title,{super.key});
 
   @override
-  State<StatefulWidget> createState() => _studentEventState(eventId,title);
+  State<StatefulWidget> createState() => _studentEventState(_eventId,_title);
 }
 
 class _studentEventState extends State<studentEvent>{
-  String eventId;
-  String title;
+  String _eventId;
+  String _title;
+  String _description = "";
+  String _venue ="";
+  String _date="";
+  String _time="";
+  List<String> _announcementTitles = [];
+  List<String> _announcementDescriptions = [];
+  List<String> _announcementTimes = [];
   var itemList = List<String>.generate(10, (index) => 'Item ${index+1}');
-  _studentEventState(this.eventId,this.title);
+  _studentEventState(this._eventId,this._title);
+
+  @override
+  void initState() {
+    super.initState();
+    fetchEvent();
+  }
+
+  Future fetchEvent() async {
+    try{
+      var db = FirebaseFirestore.instance;
+
+      var collectionRef = db.collection('event');
+      var documentId = _eventId;
+      var documentRef = collectionRef.doc(documentId);
+
+      var documentSnapshot = await documentRef.get();
+
+      if(documentSnapshot.exists){
+        print("Document exists on the database");
+        // print(documentSnapshot.data());
+        documentSnapshot.data()?.entries.forEach((element) {
+          // print(element.value);
+          if(element.key == 'title'){
+            _title = element.value;
+          }
+          else if(element.key == 'time'){
+            // Timestamp timestamp = Timestamp.fromMillisecondsSinceEpoch(int.parse(element.value));
+            DateTime dateTime = element.value.toDate();
+
+            String date = DateFormat('yyyy-MMM-dd').format(dateTime);
+            String time = DateFormat('h:mm a').format(dateTime);
+            _date = date;
+            _time = time;
+          }
+          else if(element.key == 'description'){
+            _description = element.value;
+          }
+          else if(element.key == 'venue'){
+            _venue = element.value;
+          }
+        });
+      }
+      else{
+        print("Document does not exist on the database");
+      }
+      // print("HEEE"+_eventId);
+
+
+      var query2 = await db
+          .collection('event_announcement')
+          .where('event_id',
+          isEqualTo:
+          FirebaseFirestore.instance.collection('event').doc(_eventId))
+          .get()
+          .then((querySnapshot) {
+        for (var docSnapshot in querySnapshot.docs) {
+          docSnapshot.data().entries.forEach((element) {
+            print(docSnapshot.data().toString());
+            if(element.key == 'title'){
+              // print("HEEE"+element.value);
+              _announcementTitles.add(element.value);
+            }
+            else if(element.key == 'time'){
+              // print(element.value);
+              // Timestamp timestamp = Timestamp.fromMillisecondsSinceEpoch(int.parse(element.value));
+              DateTime dateTime = element.value.toDate();
+
+              String date = DateFormat('yyyy-MMM-dd').format(dateTime);
+              String time = DateFormat('h:mm a').format(dateTime);
+              _announcementTimes.add("$date $time");
+            }
+            else if(element.key == 'description'){
+              // print(element.value);
+              _announcementDescriptions.add(element.value);
+            }
+          });
+        }
+      });
+
+      setState(() {
+      });
+    }
+    on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+        return 1;
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+        return 2;
+      }
+    } catch (e) {
+      print(e);
+      return 3;
+    }
+    return 3;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(title,style: TextStyle(fontSize: 20.0),),
+        title: Text(_title,style: TextStyle(fontSize: 20.0),),
       ),
         drawer: const StudentDrawer(),
       body: SingleChildScrollView(
@@ -67,7 +174,7 @@ class _studentEventState extends State<studentEvent>{
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => CreateEventAnnouncement()),
+                          builder: (context) => CreateEventAnnouncement(_eventId)),
                     );
                   },
                   child: Text("Create New Announcement"),
@@ -81,16 +188,16 @@ class _studentEventState extends State<studentEvent>{
               child:Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 // crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text("UCSC PREMISES", style:TextStyle(
+                children: [
+                  Text(_title, style:const TextStyle(
                     fontSize: 25.0,
                     fontWeight: FontWeight.bold,
                   )),
-                  Text("2023 - 03 - 27", style:TextStyle(
+                  Text(_date, style:const TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   )),
-                  Text("8.00 AM", style:TextStyle(
+                  Text(_time, style:const TextStyle(
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   )),
@@ -98,7 +205,7 @@ class _studentEventState extends State<studentEvent>{
               ),
             ),
             const SizedBox(height: 15.0),
-            Divider(height: 5.0,thickness: 2.0),
+            const Divider(height: 5.0,thickness: 2.0),
             Container(
                 margin:const EdgeInsets.only(left:5,right:5,top:15.0),
                 padding: const EdgeInsets.only(left:10,right:10,top:15.0,bottom: 15.0),
@@ -108,15 +215,15 @@ class _studentEventState extends State<studentEvent>{
                 ),
                 child:Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text("Description",style: TextStyle(
+                  children: [
+                    const Text("Description",style: TextStyle(
                       fontSize: 22.0,
                       fontWeight: FontWeight.bold,
                     ),),
                     SizedBox(height: 10.0),
                     Text(
-                      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                      style: TextStyle(
+                      _description,
+                      style: const TextStyle(
                         fontSize: 16.0,
                         wordSpacing: 4.0,
                         letterSpacing: 1.0,
@@ -141,8 +248,9 @@ class _studentEventState extends State<studentEvent>{
             ),
 
             Column(
-                children: itemList.map((item) {
-                  return _buildAnnouncement();
+                children: _announcementTitles.map((title) {
+                  return _buildAnnouncement(title);
+                  // int index++;
                 }).toList()
             )
           ],
@@ -152,7 +260,7 @@ class _studentEventState extends State<studentEvent>{
     );
   }
 
-  Widget _buildAnnouncement()
+  Widget _buildAnnouncement(title)
   {
     return Container(
       margin:const EdgeInsets.only(left:5,right:5,top:15.0),
@@ -162,13 +270,13 @@ class _studentEventState extends State<studentEvent>{
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
-        children: const [
-          Text("This is the Announcement Topic",style: TextStyle(
+        children: [
+          Text(title,style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16.0,
           ),),
-          SizedBox(height: 15.0),
-          Text(
+          const SizedBox(height: 15.0),
+          const Text(
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
             style: TextStyle(
               fontSize: 14.0,

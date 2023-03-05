@@ -1,6 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_field/date_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unimate/student/student_drawer.dart';
+import 'package:intl/intl.dart';
 
 class addNewEvent extends StatefulWidget{
   const addNewEvent({super.key});
@@ -16,7 +20,7 @@ class _addNewEventState extends State<addNewEvent>{
   late String _description;
   late String _venue;
   late String _date;
-  late int _time;
+  late String _time;
 
   Widget _buildEventTitleField() {
     return TextFormField(
@@ -74,7 +78,7 @@ class _addNewEventState extends State<addNewEvent>{
         border: OutlineInputBorder(),
       ),
       onSaved: (value) {
-        _description = value!;
+        _venue = value!;
       },
     );
   }
@@ -92,16 +96,12 @@ class _addNewEventState extends State<addNewEvent>{
         autovalidateMode: AutovalidateMode.always,
         validator: (date)
         {
-          if(date == null)
-          {
-            return "Date can't be empty";
-          }
           return null;
           // (e?.day ?? 0) == 1 ? 'Please not the first day' : null
         },
-        onSaved: (value){
-          _date = value! as String;
-        },
+      onSaved: (value) {
+        _date = DateFormat('yyyy-MM-dd').format(value!);
+      },
         onDateSelected: (DateTime value) {
           print(value);
         },
@@ -120,18 +120,42 @@ class _addNewEventState extends State<addNewEvent>{
       mode: DateTimeFieldPickerMode.time,
       autovalidateMode: AutovalidateMode.always,
       validator: (text){
-        if(text == null)
-          {
-            return "Time can't be empty";
-          }
+        return null;
       },
-      onSaved: (value){
-        _date = value! as String;
+      onSaved: (value) {
+        _time = DateFormat('HH:mm:ss').format(value!);
       },
       onDateSelected: (DateTime value) {
         print(value);
       },
     );
+  }
+
+  Future createEvent(String title, String description, String venue, String date, String time) async {
+    String dateTimeString = '$date $time';
+    DateTime dateTime = DateTime.parse(dateTimeString);
+    int timestamp = dateTime.millisecondsSinceEpoch;
+        CollectionReference collectionReference =
+        FirebaseFirestore.instance.collection('event');
+        collectionReference.add({
+          'title': title,
+          'description': description,
+          'venue': venue,
+          'time': timestamp,
+        }).then((DocumentReference documentReference) {
+  // print the ID of the new document
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text("Event Created Successfully"),
+              backgroundColor: Colors.green,
+          ));
+      }).catchError((error) {
+// handle errors
+        print('Error adding document: $error');
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Error adding document"),
+          backgroundColor: Colors.red,
+        ));
+      });
   }
 
   @override
@@ -182,6 +206,7 @@ class _addNewEventState extends State<addNewEvent>{
                       if (_formKey.currentState!.validate()) {
                         print('valid form');
                         _formKey.currentState!.save();
+                        createEvent(_title, _description, _venue, _date, _time);
                       } else {
                         print('not valid form');
 

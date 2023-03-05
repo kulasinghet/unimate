@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:unimate/student/student_drawer.dart';
 import 'addNewEvent.dart';
 import 'studentEvent.dart';
+import 'package:intl/intl.dart';
 
 class EventList extends StatefulWidget{
 
@@ -17,14 +18,10 @@ class EventList extends StatefulWidget{
 
 class _EventListState extends State<EventList> {
 
-  List<Map<String, dynamic>?> eventNameList = [];
-  List<Map<String, dynamic>?> eventDateList = [];
-  // List<Map<String, dynamic>?> eventIdList = [];
-
-  var items = List<String>.generate(5, (index) => 'Item ${index+1}');
-  var dates = List<String>.generate(5, (index) => 'Item ${index+1}');
-
-  var eventId = '0';
+  List<String> eventNameList = [];
+  List<String> eventDateList = [];
+  List<String> eventTimeList = [];
+  List<String> eventIdList = [];
 
   @override
   void initState() {
@@ -34,13 +31,10 @@ class _EventListState extends State<EventList> {
 
   Future fetchAllEvents() async {
     try{
-      print("Hello");
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? userId = prefs.getString('userId');
 
       var db = FirebaseFirestore.instance;
-
-      List<String> eventIdList = [];
 
       var query = await db
           .collection('event')
@@ -50,11 +44,38 @@ class _EventListState extends State<EventList> {
           .get()
           .then((querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
-          eventIdList.add(docSnapshot.data().entries.elementAt(1).value.id);
+          querySnapshot.docs.forEach((doc) {
+            // print(doc.id); // prints the document ID
+            eventIdList.add(doc.id);
+          });
+          docSnapshot.data().entries.forEach((element) {
+            // print(element.value);
+            if(element.key == 'title'){
+              eventNameList.add(element.value);
+            }
+            else if(element.key == 'time'){
+              // Timestamp timestamp = Timestamp.fromMillisecondsSinceEpoch(int.parse(element.value));
+              DateTime dateTime = element.value.toDate();
+
+              String date = DateFormat('yyyy-MMM-dd').format(dateTime);
+              String time = DateFormat('HH:mm:ss').format(dateTime);
+              eventDateList.add(date);
+              eventTimeList.add(time);
+              // print(date+" "+time);
+            }
+            // else if(element.key == 'id'){
+            //   // print(element.value+" "+element.key);
+            //   eventIdList.add(element.value);
+            // }
+          });
         }
       });
 
-      debugPrint(eventIdList.first);
+      // debugPrint("hello"+eventNameList.first.toString());
+      // debugPrint(eventIdList.first);
+      setState(() {
+        // debugPrint(lecturerNameList[0].toString());
+      });
     }
     on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -73,19 +94,6 @@ class _EventListState extends State<EventList> {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> _items = [
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4',
-      'Item 5',
-      'Item 1',
-      'Item 2',
-      'Item 3',
-      'Item 4',
-      'Item 5'
-    ];
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -95,7 +103,7 @@ class _EventListState extends State<EventList> {
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListView.builder(
-              itemCount: items.length,
+              itemCount: eventNameList.length,
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                   elevation: 1,
@@ -111,16 +119,16 @@ class _EventListState extends State<EventList> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          'MADhack 2.0 Delegates',
-                          style: TextStyle(
+                          eventNameList[index],
+                          style: const TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         SizedBox(height: 8.0),
                         Text(
-                          'Jan 12',
-                          style: TextStyle(
+                          "${eventDateList[index]}\n${eventTimeList[index]}",
+                          style: const TextStyle(
                             fontSize: 16.0,
                           ),
                         ),
@@ -135,10 +143,10 @@ class _EventListState extends State<EventList> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => studentEvent(eventId,'MADhack 2.0 Delegates')),
+                                        builder: (context) => studentEvent(eventIdList[index],eventNameList[index])),
                                   );
                                 },
-                                child: const Text('Enter'),
+                                child: const Text('View'),
                               ),
                             ),
                           ],

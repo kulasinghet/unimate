@@ -1,22 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:date_field/date_field.dart';
 import 'package:flutter/material.dart';
 import 'package:unimate/student/student_drawer.dart';
 
 class CreateEventAnnouncement extends StatefulWidget{
-  const CreateEventAnnouncement({super.key});
+
+  late String _eventID;
+  CreateEventAnnouncement(this._eventID, {super.key});
 
   @override
-  State<StatefulWidget> createState() => _CreateEventAnnouncementState();
+  State<StatefulWidget> createState() => _CreateEventAnnouncementState(_eventID);
 }
 
 class _CreateEventAnnouncementState extends State<CreateEventAnnouncement>{
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  late String _eventID;
   late String _title;
   late String _description;
-  late String _venue;
-  late String _date;
-  late int _time;
+  late DateTime _datetime;
+
+  _CreateEventAnnouncementState(this._eventID);
 
   Widget _buildAnnouncementTitleField() {
     return TextFormField(
@@ -54,6 +58,35 @@ class _CreateEventAnnouncementState extends State<CreateEventAnnouncement>{
         _description = value!;
       },
     );
+  }
+
+  Future createEventAnnouncement(String title, String description) async {
+    DateTime dateTime = DateTime.now();
+    // convert DateTime to timestamp (in milliseconds)
+    int timestamp = dateTime.millisecondsSinceEpoch;
+
+    CollectionReference collectionReference =
+    FirebaseFirestore.instance.collection('event_announcement');
+    collectionReference.add({
+      'title': title,
+      'description': description,
+      'time': timestamp,
+      'event_id': FirebaseFirestore.instance.collection('event').doc(_eventID),
+    }).then((DocumentReference documentReference) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Announcement Created Successfully"),
+        backgroundColor: Colors.green
+      ));
+      //msg success
+
+    }).catchError((error) {
+// handle errors
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Announcement Creation Failed"),
+          backgroundColor: Colors.red
+      ));
+      //msg failed
+    });
   }
 
   @override
@@ -119,9 +152,11 @@ class _CreateEventAnnouncementState extends State<CreateEventAnnouncement>{
                           ),
                         ),
                         onPressed: () {
+                          print('create button pressed');
                           if (_formKey.currentState!.validate()) {
                             print('valid form');
                             _formKey.currentState!.save();
+                            createEventAnnouncement(_title, _description);
                           } else {
                             print('not valid form');
 
@@ -171,34 +206,3 @@ class HelperValidator {
     return null;
   }
 }
-
-
-// @override
-// Widget build(BuildContext context) {
-//   final List<String> _items = [
-//     'Item 1',
-//     'Item 2',
-//     'Item 3',
-//     'Item 4',
-//     'Item 5',
-//     'Item 1',
-//     'Item 2',
-//     'Item 3',
-//     'Item 4',
-//     'Item 5'
-//   ];
-//
-//   return SafeArea(
-//     child: Scaffold(
-//       appBar: AppBar(
-//         title: const Text(
-//           'Create an Event', style: TextStyle(fontSize: 20.0),),
-//       ),
-//       drawer: const StudentDrawer(),
-//       body: Padding(
-//         padding: const EdgeInsets.all(8.0),
-//         child:Text("form"),
-//       ),
-//     ),
-//   );
-// }
