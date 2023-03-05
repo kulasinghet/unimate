@@ -16,6 +16,8 @@ class TodayLecturesPage extends StatefulWidget {
 class _TodayLecturesPageState extends State<TodayLecturesPage> {
   List<Map<String, dynamic>?> itemList = [];
   List<Map<String, dynamic>?> lecturerNameList = [];
+  List<String> courseIdListGlobal = [];
+  int listSize = 0;
 
   @override
   void initState() {
@@ -86,8 +88,19 @@ class _TodayLecturesPageState extends State<TodayLecturesPage> {
             var data = documentSnapshot.data();
             lecturerList.add(data);
             setState(() {
-              lecturerNameList = lecturerList;
               itemList = courseList;
+              lecturerNameList = lecturerList;
+              // Setting course ID list
+              itemList.forEach((element) {
+                element?.entries.forEach((pair) {
+                  if(pair.key == 'course_id') {
+                    courseIdList.add(pair.value.id);
+                  }
+                });
+              });
+              courseIdListGlobal = courseIdList;
+              listSize = lecturerNameList.length;
+              // debugPrint(lecturerNameList[0].toString());
             });
           }
         }
@@ -127,59 +140,63 @@ class _TodayLecturesPageState extends State<TodayLecturesPage> {
           const SizedBox(height: 8),
           Expanded(
             child: ListView.builder(
-              itemCount: itemList.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Card(
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                      color: Theme.of(context).colorScheme.background,
+                itemCount: listSize,
+                itemBuilder: (BuildContext context, int index) {
+                  return Card(
+                    elevation: 1,
+                    shape: RoundedRectangleBorder(
+                      side: BorderSide(
+                        color: Theme.of(context).colorScheme.background,
+                      ),
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
                     ),
-                    borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          itemList[index]!['code'] + " " + itemList[index]!['name'],
-                          style: const TextStyle(
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 8.0),
-                        Text(
-                          lecturerNameList[index]!['name'],
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                          ),
-                        ),
-                        SizedBox(height: 16.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            SizedBox(
-                              width: 120.0,
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(
-                                      builder: (BuildContext context) {
-                                        return const StudentCourse();
-                                      }));
-                                },
-                                child: Text('Enter'),
-                              ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            itemList[index]!['code'] +
+                                " " +
+                                itemList[index]!['name'],
+                            style: const TextStyle(
+                              fontSize: 22.0,
+                              fontWeight: FontWeight.bold,
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            lecturerNameList[index]!['name'],
+                            style: const TextStyle(
+                              fontSize: 16.0,
+                            ),
+                          ),
+                          SizedBox(height: 16.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              SizedBox(
+                                width: 120.0,
+                                child: ElevatedButton(
+                                  onPressed: () async {
+                                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                                    prefs.setString("courseId", courseIdListGlobal[index]);
+
+                                    Navigator.of(context).push(MaterialPageRoute(
+                                        builder: (BuildContext context) {
+                                          return const StudentCourse();
+                                        }));
+                                  },
+                                  child: Text('Enter'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                }),
           ),
         ],
       ),

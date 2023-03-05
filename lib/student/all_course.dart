@@ -1,9 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:unimate/student/course.dart';
 import 'package:unimate/student/student_drawer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class StudentAllCoursePage extends StatefulWidget {
   const StudentAllCoursePage({Key? key}) : super(key: key);
@@ -16,6 +16,7 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
   List<Map<String, dynamic>?> itemList = [];
   List<Map<String, dynamic>?> lecturerNameList = [];
   List<String> courseIdListGlobal = [];
+  int listSize = 0;
 
   @override
   void initState() {
@@ -41,8 +42,9 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
           .then((querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
           // courseIdList.add(docSnapshot.data().entries.elementAt(1).value.id);
+          debugPrint(docSnapshot.data().toString());
           docSnapshot.data().entries.forEach((element) {
-            if(element.key == 'course_id') {
+            if (element.key == 'course_id') {
               courseIdList.add(element.value.id);
             }
           });
@@ -69,7 +71,7 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
 
           String lecturerId = '';
           documentSnapshot.data()?.entries.forEach((element) {
-            if(element.key == 'lecture_id') {
+            if (element.key == 'lecture_id') {
               lecturerId = element.value.id;
             }
           });
@@ -84,16 +86,23 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
             lecturerList.add(data);
             // debugPrint(data.toString());
             setState(() {
-              lecturerNameList = lecturerList;
               itemList = courseList;
+              lecturerNameList = lecturerList;
+              // Setting course ID list
+              itemList.forEach((element) {
+                element?.entries.forEach((pair) {
+                  if(pair.key == 'course_id') {
+                    courseIdList.add(pair.value.id);
+                  }
+                });
+              });
               courseIdListGlobal = courseIdList;
+              listSize = lecturerNameList.length;
               // debugPrint(lecturerNameList[0].toString());
             });
           }
         }
       });
-
-
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -120,7 +129,7 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
         body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: ListView.builder(
-              itemCount: itemList.length,
+              itemCount: listSize,
               itemBuilder: (BuildContext context, int index) {
                 return Card(
                   elevation: 1,
@@ -136,7 +145,9 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          itemList[index]!['code'] + " " + itemList[index]!['name'],
+                          itemList[index]!['code'] +
+                              " " +
+                              itemList[index]!['name'],
                           style: const TextStyle(
                             fontSize: 22.0,
                             fontWeight: FontWeight.bold,
