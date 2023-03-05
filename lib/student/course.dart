@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:unimate/student/AttendanceCheck.dart';
 import 'package:unimate/student/assingment.dart';
 
 List<String> weekdays = [
@@ -122,7 +123,17 @@ class _StudentCourseState extends State<StudentCourse> {
                     SizedBox(
                       width: 150,
                       child: ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          SharedPreferences.getInstance().then((prefs) {
+                            prefs.setString(
+                                'courseIdToMarkAttendance', 'SCS1202');
+                          });
+
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (BuildContext context) {
+                            return AttendanceCheckStudent();
+                          }));
+                        },
                         child: const Text("Mark Attendance"),
                       ),
                     ),
