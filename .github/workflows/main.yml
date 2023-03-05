@@ -3,6 +3,9 @@ name: Demo App Android Release
 on:
   push:
     branches: [ master ]
+    
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
 jobs:
   version:
