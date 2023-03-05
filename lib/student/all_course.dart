@@ -36,8 +36,8 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
       var query = await db
           .collection('student_course')
           .where('student_id',
-              isEqualTo:
-                  FirebaseFirestore.instance.collection('users').doc(userId))
+          isEqualTo:
+          FirebaseFirestore.instance.collection('users').doc(userId))
           .get()
           .then((querySnapshot) {
         for (var docSnapshot in querySnapshot.docs) {
@@ -173,8 +173,8 @@ class _StudentAllCoursePageState extends State<StudentAllCoursePage> {
 
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (BuildContext context) {
-                                    return const StudentCourse();
-                                  }));
+                                        return const StudentCourse();
+                                      }));
                                 },
                                 child: Text('Enter'),
                               ),

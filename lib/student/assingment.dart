@@ -86,7 +86,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                           color: Theme.of(context).colorScheme.background,
                         ),
                         borderRadius:
-                            const BorderRadius.all(Radius.circular(12)),
+                        const BorderRadius.all(Radius.circular(12)),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),

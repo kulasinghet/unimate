@@ -38,11 +38,13 @@ dependencies:
   flutter_svg: ^2.0.2
   firebase_core: ^2.7.0
   firebase_auth: ^4.2.9
+
   cloud_firestore: ^4.4.3
   shared_preferences: ^2.0.8
   geolocator: ^9.0.2
   permission_handler: ^8.0.0
   qr_flutter: ^4.0.0
+  date_field: ^3.0.0
   qrscan: ^0.3.3
 
 dev_dependencies:
@@ -68,8 +70,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  assets:
-    - assets/svgs/
+#  assets:
+#    - assets/svgs/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

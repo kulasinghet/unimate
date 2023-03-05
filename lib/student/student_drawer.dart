@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'all_course.dart';
 import 'assingment.dart';
+import 'eventList.dart';
 
 class StudentDrawer extends StatefulWidget {
   const StudentDrawer({Key? key}) : super(key: key);
@@ -46,7 +47,10 @@ class _StudentDrawerState extends State<StudentDrawer> {
             leading: const Icon(Icons.event),
             title: const Text('All Events'),
             onTap: () {
-              // TODO: Handle notifications tap
+              Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (BuildContext context) {
+                return EventList();
+              }));
             },
           ),
           ListTile(
