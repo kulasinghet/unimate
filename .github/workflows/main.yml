@@ -2,7 +2,7 @@ name: Build and Publish APK
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,6 +15,19 @@ jobs:
         run: flutter pub get
       - name: Build APK
         run: flutter build apk
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.ref }}
+          release_name: Release v${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Set Upload URL
+        id: upload_url
+        run: echo "::set-env name=UPLOAD_URL::$(echo ${{ steps.create_release.outputs.upload_url }} | cut -d'{' -f1)"
       - name: Upload APK to GitHub Releases
         uses: actions/upload-release-asset@v1
         with:
@@ -23,12 +36,4 @@ jobs:
           asset_name: app-release.apk
           asset_content_type: application/vnd.android.package-archive
         env:
-          UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
-      - name: Publish release
-        id: create_release
-        uses: actions/create-release@v1
-        with:
-          tag_name: v${{ github.ref }}
-          release_name: Release v${{ github.ref }}
-          draft: false
-          prerelease: false
+          UPLOAD_URL: ${{ env.UPLOAD_URL }}
