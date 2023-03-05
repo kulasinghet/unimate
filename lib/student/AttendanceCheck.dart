@@ -1,5 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:qrscan/qrscan.dart' as scanner;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AttendanceCheckStudent extends StatefulWidget {
@@ -26,6 +30,15 @@ class _AttendanceCheckStudentState extends State<AttendanceCheckStudent> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  if (isAttendanceValid != 0) ...[
+                    SvgPicture.asset(
+                      'assets/svgs/undraw_two_factor_authentication_namy.svg',
+                      height: 200,
+                    ),
+                  ],
                   SizedBox(
                     height: 20,
                   ),
@@ -57,6 +70,12 @@ class _AttendanceCheckStudentState extends State<AttendanceCheckStudent> {
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(
                               "Attendance has already been marked for this course!"),
+                          backgroundColor: Colors.red,
+                        ));
+                      } else if (attendanceStatus == 7) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content:
+                              Text("Your distance from the class is too far!"),
                           backgroundColor: Colors.red,
                         ));
                       }
@@ -150,6 +169,8 @@ class _AttendanceCheckStudentState extends State<AttendanceCheckStudent> {
 
     print("courseIdToMarkAttendance: $courseIdToMarkAttendance");
 
+    Position position = await getLocation();
+
     FirebaseFirestore.instance
         .collection('course')
         .where('code', isEqualTo: courseIdToMarkAttendance)
@@ -165,6 +186,8 @@ class _AttendanceCheckStudentState extends State<AttendanceCheckStudent> {
       GeoPoint location = documentSnapshot.get('location');
       String attendance_key = documentSnapshot.get('attendance_key');
 
+      GeoPoint userLocation = GeoPoint(position.latitude, position.longitude);
+
       prefs.setString('attendance_key', attendance_key);
       prefs.setString(
           'attendance_start_time', attendance_start_time.seconds.toString());
@@ -179,7 +202,7 @@ class _AttendanceCheckStudentState extends State<AttendanceCheckStudent> {
       if (attendance_enabled) {
         if (dateTime.isBefore(DateTime.now().add(Duration(hours: 2)))) {
           print("this if else is called");
-          if (checkAlreadyAttend() == 3) {
+          if (checkAlreadyAttend(userLocation, location)) {
             print("attendance has already been marked");
             isAttendanceValid = 3;
             setState(() {
@@ -187,17 +210,9 @@ class _AttendanceCheckStudentState extends State<AttendanceCheckStudent> {
             });
           }
         } else {
-          print("attendance has not been marked");
-          isAttendanceValid = 0;
-          setState(() {
-            isAttendanceValid = 0;
-          });
+          print("attendance has not beeskdfhjksdhjn marked");
         }
       } else {
-        print("attendance_enabled: $attendance_enabled");
-        print(
-            "is date before: ${dateTime.isBefore(DateTime.now().add(Duration(hours: 2)))}");
-        print("attendance has not been enabled");
         isAttendanceValid = 1;
         setState(() {
           isAttendanceValid = 1;
@@ -205,7 +220,7 @@ class _AttendanceCheckStudentState extends State<AttendanceCheckStudent> {
       }
     });
 
-    print("isAttendanceValid: $isAttendanceValid");
+    print("isAttendanceValidfinal: $isAttendanceValid");
     return isAttendanceValid;
   }
 
@@ -214,6 +229,8 @@ class _AttendanceCheckStudentState extends State<AttendanceCheckStudent> {
 // compare it with the attendance key entered by the user
 // if they match, mark attendance
 // else, show error message
+
+    // get GeoLocation
 
     print("handleMarkAttendance: ${widget.AttendanceKey}");
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -257,7 +274,7 @@ class _AttendanceCheckStudentState extends State<AttendanceCheckStudent> {
     return false;
   }
 
-  checkAlreadyAttend() async {
+  checkAlreadyAttend(userLocation, location) async {
     print('this checkAlreadyAttend is called');
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -275,6 +292,21 @@ class _AttendanceCheckStudentState extends State<AttendanceCheckStudent> {
         setState(() {
           isAttendanceValid = 0;
         });
+
+        if (isLessThan100meters(userLocation, location)) {
+          print("isLessThan100m");
+          isAttendanceValid = 0;
+          setState(() {
+            isAttendanceValid = 0;
+          });
+        } else {
+          print("isMoreThan100m");
+          isAttendanceValid = 7;
+          setState(() {
+            isAttendanceValid = 7;
+          });
+        }
+
         return;
       } else {
         DocumentSnapshot documentSnapshot = querySnapshot.docs.first;
@@ -298,5 +330,75 @@ class _AttendanceCheckStudentState extends State<AttendanceCheckStudent> {
     return isAttendanceValid;
   }
 
-  void handleQRCodeScan() {}
+  // var status = await Permission.location.status;
+  // if (status.isGranted) {
+  // // Your app has permission to access the device's location
+  // Position position = await Geolocator.getCurrentPosition();
+  // return position;
+  // } else {
+  // // Your app doesn't have permission to access the device's location yet
+  // await Permission.location.request();
+  // return getLocation();
+  // }
+
+  Future<void> handleQRCodeScan() async {
+    var status = await Permission.camera.status;
+    if (status.isGranted) {
+      // Your app has permission to access the device's location
+      try {
+        final String? qrCode = await scanner.scan();
+        if (qrCode != null) {
+          print('QR code scanned: $qrCode');
+
+          widget.AttendanceKey = qrCode;
+
+          if (await handleMarkAttendance()) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Attendance has been marked!"),
+              backgroundColor: Colors.green,
+            ));
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text("Invalid Attendance Key!"),
+              backgroundColor: Colors.red,
+            ));
+          }
+        } else {
+          print('QR code not scanned');
+        }
+      } catch (e) {
+        print('Error scanning QR code: $e');
+      }
+    } else {
+      // Your app doesn't have permission to access the device's location yet
+      await Permission.camera.request();
+      handleQRCodeScan();
+    }
+  }
+
+  getLocation() async {
+    var status = await Permission.location.status;
+    if (status.isGranted) {
+      // Your app has permission to access the device's location
+      Position position = await Geolocator.getCurrentPosition();
+      return position;
+    } else {
+      // Your app doesn't have permission to access the device's location yet
+      await Permission.location.request();
+      return getLocation();
+    }
+  }
+
+  bool isLessThan100meters(GeoPoint userLocation, GeoPoint location) {
+    double distanceInMeters = Geolocator.distanceBetween(userLocation.latitude,
+        userLocation.longitude, location.latitude, location.longitude);
+    print("distanceInMeters: $distanceInMeters");
+    if (distanceInMeters < 100) {
+      print("distance is less than 100m");
+      return true;
+    } else {
+      print("distance is greater than 100m");
+      return false;
+    }
+  }
 }
