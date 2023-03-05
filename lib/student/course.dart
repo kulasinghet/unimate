@@ -25,6 +25,8 @@ class _StudentCourseState extends State<StudentCourse> {
   List<Map<String, dynamic>?> lecturerNameList = [];
   List<String> courseIdListGlobal = [];
   List<Map<String, dynamic>?> announcementList = [];
+  String _selectedResult = "A+";
+  String resultId = "";
 
   @override
   void initState() {
@@ -72,7 +74,7 @@ class _StudentCourseState extends State<StudentCourse> {
           var data = documentSnapshot.data();
           lecturerList.add(data);
           setState(() {
-          // debugPrint(data.toString());
+            // debugPrint(data.toString());
             lecturerNameList = lecturerList;
             itemList = courseList;
             courseIdListGlobal = courseIdList;
@@ -100,7 +102,31 @@ class _StudentCourseState extends State<StudentCourse> {
           setState(() {
             announcementList = tempAnnouncementList;
           });
+
         });
+
+        //  Fetch user results if(Possible);
+        String? userId = prefs.getString('userId');
+        query = await db
+            .collection('student_course')
+            .where('student_id',
+            isEqualTo:
+            FirebaseFirestore.instance.collection('users').doc(userId))
+            .where('course_id',
+            isEqualTo:
+            FirebaseFirestore.instance.collection('course').doc(courseId))
+            .get()
+            .then((querySnapshot) {
+          for (var docSnapshot in querySnapshot.docs) {
+            debugPrint(docSnapshot.id);
+            setState(() {
+              _selectedResult = docSnapshot.data()['result'];
+              resultId = docSnapshot.id;
+            });
+          }
+        });
+
+
       }
     } on FirebaseAuthException catch (e) {
       if (false) {
@@ -190,6 +216,66 @@ class _StudentCourseState extends State<StudentCourse> {
                           }));
                         },
                         child: const Text("Assignments"),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    const Text("Add your result (If available)", style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),),
+                    const SizedBox(
+                      height: 8.0,
+                    ),
+                    Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.amber,
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: DropdownButton<String>(
+                          dropdownColor: Colors.amber,
+                          style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold),
+                          value: _selectedResult,
+                          hint: const Text('Select exam result'),
+                          items: const [
+                            DropdownMenuItem(
+                              value: 'A+',
+                              child: Text('A+'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'A',
+                              child: Text('A'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'B',
+                              child: Text('B'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'C',
+                              child: Text('C'),
+                            ),
+                            DropdownMenuItem(
+                              value: 'F',
+                              child: Text('F'),
+                            ),
+                          ],
+                          onChanged: (String? value) async {
+                            setState(() {
+                              _selectedResult = value!;
+                            });
+                            var db = FirebaseFirestore.instance;
+                            await db.collection('student_course').doc(resultId).update({
+                              'result': value,
+                            });
+
+                          },
+                        ),
                       ),
                     ),
                     const SizedBox(
