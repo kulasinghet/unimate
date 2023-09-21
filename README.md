@@ -1,16 +1,29 @@
-# unimate
+# Unimate 
 
-A new Flutter project.
 
-## Getting Started
+Welcome to the official repository of Unimate, a groundbreaking mobile application that revolutionizes student participation tracking. This project was developed in 2023 at the University of Colombo School of Computing (UCSC) and achieved victory at the MadHack Mobile Development Hackathon. Unimate is designed to provide universities with a secure and efficient way to track student participation.
 
-This project is a starting point for a Flutter application.
+## Project Overview
 
-A few resources to get you started if this is your first Flutter project:
+### About the Project
+Unimate is a mobile application engineered to simplify student participation tracking for universities. By leveraging the capabilities of modern technology, Unimate uses the device's camera to scan QR codes and record student participation securely and accurately.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Key Features
+- **Hackathon Winner:** Unimate secured victory at the MadHack Mobile Development Hackathon, highlighting its innovation and impact.
+- **QR Code Scanning:** The application utilizes the camera to scan QR codes, enabling universities to efficiently track student participation.
+- **Technology Stack:** Unimate is developed using Flutter and Firebase, ensuring a robust and scalable solution.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Achievements
+- Engineered Unimate, a mobile application that revolutionizes student participation tracking in universities.
+- Collaborated with the team to create a secure and efficient solution that utilizes QR code scanning for accurate participation tracking.
+- Contributed to the development of Unimate's backend infrastructure, ensuring data security and reliability.
+
+### Technology Stack
+The technology stack used in this project includes:
+- **Flutter**
+- **Firebase**
+
+## Get Involved
+If you're interested in contributing to Unimate or have suggestions, please explore the [GitHub repository](https://github.com/kulasinghet/unimate) and connect with our team. Your contributions and feedback are highly valuable as we continue to enhance and expand this innovative student participation tracking solution.
+
+Thank you for visiting the Unimate repository. Together, we can simplify and streamline student participation tracking in universities.
